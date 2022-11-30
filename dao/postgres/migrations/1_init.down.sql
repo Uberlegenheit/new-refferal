@@ -1,0 +1,9 @@
+drop table if exists rewards;
+drop table if exists reward_types;
+drop table if exists rewards_history;
+drop table if exists rewards_pool;
+drop table if exists stakes;
+drop table if exists boxes;
+drop table if exists links;
+drop table if exists invitations;
+drop table if exists users;
