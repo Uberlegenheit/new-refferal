@@ -109,6 +109,8 @@ func (api *API) initialize() {
 	api.router.GET("/health", api.Health)
 
 	api.router.POST("/register", api.SignIn)
+	api.router.POST("/delegate", api.Delegate)
+	api.router.POST("/gets", api.Gets)
 
 	mGroup := api.router.Group("/m")
 	mGroup.Use(api.SomeMiddleware())

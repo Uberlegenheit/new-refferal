@@ -30,6 +30,14 @@ func (db *Postgres) CreateUserAndLink(user *models.User, code string) (*models.U
 			return err
 		}
 
+		if err := tx.Create(&models.Box{
+			UserID:    user.ID,
+			Available: 0,
+			Opened:    0,
+		}).Error; err != nil {
+			return err
+		}
+
 		return nil
 	})
 	if err != nil {

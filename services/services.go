@@ -12,6 +12,14 @@ import (
 type (
 	Service interface {
 		LogInOrRegister(user *models.User) (*models.User, error)
+
+		GetLinkByUserID(user *models.User) (*models.Link, error)
+
+		SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
+		GetInvitedUsersStakes(user *models.User) ([]models.StakeShow, error)
+
+		GetUserRewardsByID(user *models.User) ([]models.RewardShow, error)
+		GetAllRewards() ([]models.RewardShow, error)
 	}
 	Scheduler interface {
 		AddProcessWithInterval(process scheduler.Process, interval time.Duration)

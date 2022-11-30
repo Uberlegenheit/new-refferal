@@ -24,3 +24,20 @@ func (api *API) SignIn(c *gin.Context) {
 
 	c.JSON(http.StatusOK, usr)
 }
+
+func (api *API) Gets(c *gin.Context) {
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	usr, err := api.services.GetInvitedUsersStakes(&user)
+	if err != nil {
+		log.Error("[api] SignIn: LogInOrRegister", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, usr)
+}

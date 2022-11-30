@@ -20,6 +20,16 @@ type (
 		GetUserByWalletAddress(addr string) (*models.User, error)
 
 		GetLastLink() (*models.Link, error)
+		GetLinkByUserID(id uint64) (*models.Link, error)
+
+		SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
+		GetInvitedUsersStakes(id uint64) ([]models.StakeShow, error)
+		GetStakeAndBoxUserStatByID(id uint64) (*models.StakeAndBoxStat, error)
+		AddBoxesByUserID(userID uint64, newBoxes int64) error
+		OpenBoxByUserID(userID uint64) error
+
+		GetUserRewardsByID(id uint64) ([]models.RewardShow, error)
+		GetAllRewards() ([]models.RewardShow, error)
 	}
 
 	Cache   interface{}

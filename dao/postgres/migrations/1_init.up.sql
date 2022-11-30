@@ -66,7 +66,7 @@ create table if not exists rewards
     status    varchar(25)                  not null,
     type_id   int4 references reward_types(id)  on update cascade on delete restrict not null,
     amount    float8       not null,
-    tx_hash   varchar(150) not null,
+    tx_hash   varchar(150) default '',
     created   timestamp default now() not null
 );
 
