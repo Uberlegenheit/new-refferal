@@ -16,6 +16,15 @@ func (db *Postgres) SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
 	return stake, nil
 }
 
+func (db *Postgres) SetUserDelegationsFalse(id uint64) error {
+	result := db.db.Model(&models.Stake{}).Update("status", false).Where("user_id = ?", id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func (db *Postgres) GetInvitedUsersStakes(id uint64) ([]models.StakeShow, error) {
 	stakes := make([]models.StakeShow, 0)
 

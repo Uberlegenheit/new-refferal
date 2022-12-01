@@ -3,12 +3,9 @@ package services
 import (
 	"fmt"
 	"new-refferal/models"
-	"time"
 )
 
 func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake) (*models.Stake, error) {
-	stake.Created = time.Now()
-	stake.Status = true
 	stake, err := s.dao.SaveDelegationTx(stake)
 	if err != nil {
 		return nil, fmt.Errorf("dao.SaveDelegationTx: %s", err.Error())

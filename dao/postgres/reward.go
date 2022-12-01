@@ -7,6 +7,36 @@ import (
 	"new-refferal/models"
 )
 
+func (db *Postgres) SaveReward(reward *models.Reward) (*models.Reward, error) {
+	result := db.db.Create(reward)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return reward, nil
+}
+
+func (db *Postgres) UpdateReward(reward *models.Reward) error {
+	changes := make(map[string]interface{})
+
+	if reward.Hash != "" {
+		changes["tx_hash"] = reward.Hash
+	}
+	if reward.Status != "" {
+		changes["status"] = reward.Status
+	}
+	if reward.Amount != 0 {
+		changes["amount"] = reward.Amount
+	}
+
+	result := db.db.Model(&models.Reward{}).Updates(changes)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func (db *Postgres) GetUserRewardsByID(id uint64) ([]models.RewardShow, error) {
 	rewards := make([]models.RewardShow, 0)
 

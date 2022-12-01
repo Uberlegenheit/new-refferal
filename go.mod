@@ -7,11 +7,13 @@ require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang-migrate/migrate/v4 v4.12.2
+	github.com/google/martian v2.1.0+incompatible
 	github.com/gorilla/schema v1.2.0
-	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.4
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/roylee0704/gron v0.0.0-20160621042432-e78485adab46
+	github.com/shopspring/decimal v1.2.0
 	github.com/urfave/negroni v1.0.0
 	github.com/wedancedalot/squirrel v0.0.0-20181205145720-8a2fefa67662
 	go.uber.org/zap v1.19.1

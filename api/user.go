@@ -32,7 +32,7 @@ func (api *API) Gets(c *gin.Context) {
 		return
 	}
 
-	usr, err := api.services.GetInvitedUsersStakes(&user)
+	usr, err := api.services.GetAllRewards()
 	if err != nil {
 		log.Error("[api] SignIn: LogInOrRegister", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/roylee0704/gron"
 	"go.uber.org/zap"
 	"new-refferal/api"
 	"new-refferal/conf"
@@ -35,6 +36,11 @@ func main() {
 	if err != nil {
 		log.Fatal("services.NewService", zap.Error(err))
 	}
+
+	cron := gron.New()
+	s.InitCron(cron)
+	cron.Start()
+	defer cron.Stop()
 
 	a, err := api.NewAPI(cfg, s)
 	if err != nil {

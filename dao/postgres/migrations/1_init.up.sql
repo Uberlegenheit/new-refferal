@@ -1,9 +1,10 @@
 create table if not exists users
 (
     id serial not null constraint users_pk primary key,
-    wallet_name      varchar(100)             not null,
-    wallet_address   varchar(130)             not null,
-    created          timestamp default now()  not null
+    wallet_name      varchar(100)               not null,
+    wallet_address   varchar(130)               not null,
+    "role"           varchar(25) default 'user' not null,
+    created          timestamp default now()    not null
 );
 
 create table if not exists invitations
@@ -58,6 +59,9 @@ create table if not exists reward_types
     id     serial not null constraint reward_types_pk primary key,
     "name" varchar(25) not null
 );
+
+INSERT INTO reward_types(id, name) VALUES (1, 'payment');
+INSERT INTO reward_types(id, name) VALUES (2, 'box');
 
 create table if not exists rewards
 (
