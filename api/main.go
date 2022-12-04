@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"new-refferal/models"
 	"reflect"
 	"strconv"
 	"time"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/schema"
@@ -104,11 +106,89 @@ func (api *API) initialize() {
 		},
 	}))
 
+	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
+		Realm:            "test zone",
+		Key:              []byte("secret key"),
+		Timeout:          time.Hour,
+		MaxRefresh:       time.Hour,
+		IdentityKey:      "wallet_address",
+		SigningAlgorithm: "HS512",
+		PayloadFunc: func(data interface{}) jwt.MapClaims {
+			if v, ok := data.(*models.User); ok {
+				return jwt.MapClaims{
+					"wallet_address": v.WalletAddress,
+				}
+			}
+			return jwt.MapClaims{}
+		},
+		IdentityHandler: func(c *gin.Context) interface{} {
+			claims := jwt.ExtractClaims(c)
+			return &models.User{
+				WalletAddress: claims["wallet_address"].(string),
+			}
+		},
+		Authenticator: func(c *gin.Context) (interface{}, error) {
+			var user models.User
+			if err := c.ShouldBind(&user); err != nil {
+				return "", jwt.ErrMissingLoginValues
+			}
+
+			usr, err := api.services.LogInOrRegister(&user)
+			if err != nil {
+				return nil, err
+			}
+
+			return usr, nil
+		},
+		Authorizator: func(data interface{}, c *gin.Context) bool {
+			usr, err := api.services.LogInOrRegister(data.(*models.User))
+			if err != nil || usr.ID == 0 {
+				return false
+			}
+
+			return true
+		},
+		Unauthorized: func(c *gin.Context, code int, message string) {
+			c.JSON(code, gin.H{
+				"code":    code,
+				"message": message,
+			})
+		},
+		// TokenLookup is a string in the form of "<source>:<name>" that is used
+		// to extract token from the request.
+		// Optional. Default value "header:Authorization".
+		// Possible values:
+		// - "header:<name>"
+		// - "query:<name>"
+		// - "cookie:<name>"
+		// - "param:<name>"
+		TokenLookup: "header:Authorization",
+		// TokenLookup: "query:token",
+		// TokenLookup: "cookie:token",
+
+		// TokenHeadName is a string in the header. Default value is "Bearer"
+		TokenHeadName: "Bearer",
+
+		// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
+		TimeFunc: time.Now,
+	})
+	if err != nil {
+		log.Fatal("JWT Error:" + err.Error())
+	}
+
+	// When you use jwt.New(), the function is already automatically called for checking,
+	// which means you don't need to call it again.
+	errInit := authMiddleware.MiddlewareInit()
+
+	if errInit != nil {
+		log.Fatal("authMiddleware.MiddlewareInit() Error:" + errInit.Error())
+	}
+
 	// public routes
 	api.router.GET("/", api.Index)
 	api.router.GET("/health", api.Health)
 
-	api.router.POST("/register", api.SignIn)
+	api.router.POST("/register", authMiddleware.LoginHandler /*api.SignIn*/)
 	api.router.POST("/delegate", api.Delegate)
 
 	api.router.GET("/total_stats", api.GetTotalRewardStats)
@@ -121,7 +201,7 @@ func (api *API) initialize() {
 	api.router.POST("/gets", api.Gets)
 
 	mGroup := api.router.Group("/m")
-	mGroup.Use(api.SomeMiddleware())
+	mGroup.Use(authMiddleware.MiddlewareFunc() /*api.SomeMiddleware()*/)
 	{
 		mGroup.POST("/name", api.Name)
 		mGroup.GET("/read/:id", api.Read)

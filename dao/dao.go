@@ -6,6 +6,7 @@ import (
 	"new-refferal/dao/cache"
 	"new-refferal/dao/postgres"
 	"new-refferal/models"
+	"time"
 )
 
 type (
@@ -39,7 +40,11 @@ type (
 		GetUsersInvitationsStats() ([]models.InvitationsStats, error)
 	}
 
-	Cache   interface{}
+	Cache interface {
+		AddAuthToken(key string, item interface{}, expiration time.Duration) error
+		GetAuthToken(token string) (interface{}, bool, error)
+		RemoveAuthToken(key string) error
+	}
 	daoImpl struct {
 		*postgres.Postgres
 		*cache.Cache

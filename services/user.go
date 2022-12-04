@@ -9,14 +9,14 @@ import (
 )
 
 func (s *ServiceFacade) LogInOrRegister(user *models.User) (*models.User, error) {
-	lastCode, err := s.dao.GetLastLink()
-	if err != nil {
-		return nil, fmt.Errorf("dao.GetLastLink: %s", err.Error())
-	}
-
 	usr, err := s.dao.GetUserByWalletAddress(user.WalletAddress)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
+			lastCode, err := s.dao.GetLastLink()
+			if err != nil {
+				return nil, fmt.Errorf("dao.GetLastLink: %s", err.Error())
+			}
+
 			usr, err = s.dao.CreateUserAndLink(user, getNewCode(lastCode.Code))
 			if err != nil {
 				return nil, fmt.Errorf("dao.CreateUser: %s", err.Error())
