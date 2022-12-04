@@ -21,6 +21,8 @@ type (
 		UpdateReward(reward *models.Reward) error
 		GetUserRewardsByID(user *models.User) ([]models.RewardShow, error)
 		GetAllRewards() ([]models.RewardShow, error)
+		GetTotalRewardStats() ([]models.TotalReward, error)
+		GetUsersInvitationsStats() ([]models.InvitationsStats, error)
 	}
 	Scheduler interface {
 		AddProcessWithInterval(process scheduler.Process, interval time.Duration)

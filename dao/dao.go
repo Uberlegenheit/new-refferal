@@ -35,6 +35,8 @@ type (
 		UpdateReward(reward *models.Reward) error
 		GetUserRewardsByID(id uint64) ([]models.RewardShow, error)
 		GetAllRewards() ([]models.RewardShow, error)
+		GetTotalRewardStats() ([]models.TotalReward, error)
+		GetUsersInvitationsStats() ([]models.InvitationsStats, error)
 	}
 
 	Cache   interface{}

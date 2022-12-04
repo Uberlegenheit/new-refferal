@@ -110,6 +110,14 @@ func (api *API) initialize() {
 
 	api.router.POST("/register", api.SignIn)
 	api.router.POST("/delegate", api.Delegate)
+
+	api.router.GET("/total_stats", api.GetTotalRewardStats)
+	api.router.GET("/all_rewards", api.GetAllRewards)
+	api.router.GET("/invitations_stats", api.GetInvitationsStats)
+
+	api.router.GET("/my_link", api.GetMyLink)
+	api.router.GET("/invited", api.GetInvitedFriends)
+
 	api.router.POST("/gets", api.Gets)
 
 	mGroup := api.router.Group("/m")

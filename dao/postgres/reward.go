@@ -75,3 +75,43 @@ func (db *Postgres) GetAllRewards() ([]models.RewardShow, error) {
 
 	return rewards, nil
 }
+
+func (db *Postgres) GetTotalRewardStats() ([]models.TotalReward, error) {
+	rewards := make([]models.TotalReward, 0)
+
+	if err := db.db.Model(&models.TotalReward{}).
+		Select(`sum(amount) as total_paid,
+					   (select sum(amount) from rewards where type_id = 2) as box_paid,
+					   (select count(distinct user_id) from rewards) as delegators_count`).
+		Table(models.RewardsTable).
+		Scan(&rewards).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return rewards, nil
+}
+
+func (db *Postgres) GetUsersInvitationsStats() ([]models.InvitationsStats, error) {
+	stats := make([]models.InvitationsStats, 0)
+
+	if err := db.db.Model(&models.InvitationsStats{}).
+		Select(`u.id as user_id,
+					  u.wallet_name,
+					  coalesce(sum(r.amount), 0) as total_reward,
+					  count(distinct i.referral_id) as friends_invited`).
+		Table(fmt.Sprintf("%s u", models.UsersTable)).
+		Joins("left join rewards r on u.id = r.user_id").
+		Joins("left join invitations i on u.id = i.referrer_id").
+		Group("u.id").
+		Scan(&stats).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return stats, nil
+}
