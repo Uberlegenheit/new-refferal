@@ -3,6 +3,10 @@ package models
 import "time"
 
 const RewardsTable = "rewards"
+const CreatedRewardStatus = "created"
+const SentRewardStatus = "sent"
+const APYRewardType = 1
+const BoxRewardType = 2
 
 type Reward struct {
 	ID      uint64    `gorm:"column:id;PRIMARY_KEY"        json:"id"`

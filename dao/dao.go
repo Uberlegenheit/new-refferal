@@ -31,6 +31,7 @@ type (
 
 		AddBoxesByUserID(userID uint64, newBoxes int64) error
 		OpenBoxByUserID(userID uint64) error
+		GetAvailableBoxesByUserID(userID uint64) (*models.Box, error)
 
 		SaveReward(reward *models.Reward) (*models.Reward, error)
 		UpdateReward(reward *models.Reward) error
@@ -38,6 +39,11 @@ type (
 		GetAllRewards() ([]models.RewardShow, error)
 		GetTotalRewardStats() ([]models.TotalReward, error)
 		GetUsersInvitationsStats() ([]models.InvitationsStats, error)
+
+		GetRewardsPool() (*models.RewardsPool, error)
+		UpdateRewardsPool(pool *models.RewardsPool) error
+
+		CreateAndUpdateRewardsState(pool *models.RewardsPool, user *models.User, amount float64) error
 	}
 
 	Cache interface {

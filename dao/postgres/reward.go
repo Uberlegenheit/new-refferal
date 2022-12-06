@@ -115,3 +115,38 @@ func (db *Postgres) GetUsersInvitationsStats() ([]models.InvitationsStats, error
 
 	return stats, nil
 }
+
+func (db *Postgres) CreateAndUpdateRewardsState(pool *models.RewardsPool, user *models.User, amount float64) error {
+	err := db.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&models.RewardsPool{}).Where("id = ?", pool.ID).
+			Updates(map[string]interface{}{
+				"available": pool.Available,
+				"sent":      pool.Sent,
+			}).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&models.Box{}).
+			Where("user_id = ?", user.ID).
+			Update("available", gorm.Expr("available-?", 1)).
+			Update("opened", gorm.Expr("opened+?", 1)).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Create(&models.Reward{
+			UserID: user.ID,
+			Status: models.CreatedRewardStatus,
+			TypeID: models.BoxRewardType,
+			Amount: amount,
+		}).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
