@@ -11,7 +11,6 @@ type (
 		API      API
 		LogLevel string
 		Postgres Postgres
-		Cloud    Cloud
 	}
 	API struct {
 		ListenOnPort       uint64
@@ -24,11 +23,6 @@ type (
 		Password string
 		Database string
 		SSLMode  string
-	}
-	Cloud struct {
-		Name   string
-		Key    string
-		Secret string
 	}
 )
 
@@ -53,11 +47,6 @@ func GetNewConfig() (cfg Config, err error) {
 			Password: os.Getenv("DB_PASSWORD"),
 			Database: os.Getenv("DB_NAME"),
 			SSLMode:  os.Getenv("DB_SSL"),
-		},
-		Cloud: Cloud{
-			Name:   os.Getenv("CLOUD_NAME"),
-			Key:    os.Getenv("CLOUD_KEY"),
-			Secret: os.Getenv("CLOUD_SECRET"),
 		},
 	}, nil
 }

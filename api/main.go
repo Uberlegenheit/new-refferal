@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"time"
 
-	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/cors"
@@ -17,7 +16,6 @@ import (
 	"github.com/gorilla/schema"
 	"github.com/urfave/negroni"
 	"go.uber.org/zap"
-	"google.golang.org/api/option"
 	"new-refferal/conf"
 	"new-refferal/helpers/null"
 	"new-refferal/log"
@@ -64,10 +62,7 @@ func NewAPI(cfg conf.Config, s services.Service) (*API, error) {
 		services:     s,
 		queryDecoder: queryDecoder,
 	}
-	err := api.setFirebaseAuth()
-	if err != nil {
-		return nil, fmt.Errorf("api.setFirebaseAuth: %s", err.Error())
-	}
+
 	api.initialize()
 	return api, nil
 }
@@ -88,10 +83,8 @@ func (api *API) Title() string {
 func (api *API) initialize() {
 	api.router = gin.Default()
 
-	// By default gin.DefaultWriter = os.Stdout
 	api.router.Use(gin.Logger())
 
-	// Recovery middleware recovers from any panics and writes a 500 if there was one.
 	api.router.Use(gin.Recovery())
 
 	api.router.Use(cors.New(cors.Config{
@@ -154,30 +147,14 @@ func (api *API) initialize() {
 				"message": message,
 			})
 		},
-		// TokenLookup is a string in the form of "<source>:<name>" that is used
-		// to extract token from the request.
-		// Optional. Default value "header:Authorization".
-		// Possible values:
-		// - "header:<name>"
-		// - "query:<name>"
-		// - "cookie:<name>"
-		// - "param:<name>"
-		TokenLookup: "header:Authorization",
-		// TokenLookup: "query:token",
-		// TokenLookup: "cookie:token",
-
-		// TokenHeadName is a string in the header. Default value is "Bearer"
+		TokenLookup:   "header:Authorization",
 		TokenHeadName: "Bearer",
-
-		// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
-		TimeFunc: time.Now,
+		TimeFunc:      time.Now,
 	})
 	if err != nil {
 		log.Fatal("JWT Error:" + err.Error())
 	}
 
-	// When you use jwt.New(), the function is already automatically called for checking,
-	// which means you don't need to call it again.
 	errInit := authMiddleware.MiddlewareInit()
 
 	if errInit != nil {
@@ -218,19 +195,6 @@ func (api *API) startServe() error {
 	}
 	if err != nil {
 		return fmt.Errorf("cannot run API service: %s", err.Error())
-	}
-	return nil
-}
-
-func (api *API) setFirebaseAuth() error {
-	opt := option.WithCredentialsFile(firebaseFilePath)
-	app, err := firebase.NewApp(context.Background(), nil, opt)
-	if err != nil {
-		return fmt.Errorf("firebase.NewApp: %s", err.Error())
-	}
-	api.auth, err = app.Auth(context.Background())
-	if err != nil {
-		return fmt.Errorf("app.Auth: %s", err.Error())
 	}
 	return nil
 }
