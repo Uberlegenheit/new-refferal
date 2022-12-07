@@ -18,7 +18,7 @@ type (
 		SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
 		GetInvitedUsersStakes(user *models.User) ([]models.StakeShow, error)
 
-		OpenBox(user *models.User) (*models.RewardShow, error)
+		OpenBox(user *models.User) error
 
 		UpdateReward(reward *models.Reward) error
 		GetUserRewardsByID(user *models.User) ([]models.RewardShow, error)

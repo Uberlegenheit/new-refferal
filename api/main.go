@@ -175,7 +175,7 @@ func (api *API) initialize() {
 	api.router.GET("/my_link", api.GetMyLink)
 	api.router.GET("/invited", api.GetInvitedFriends)
 
-	//api.router.GET("/open_box", api.OpenBox)
+	api.router.GET("/open_box", api.OpenBox)
 
 	api.router.POST("/gets", api.Gets)
 

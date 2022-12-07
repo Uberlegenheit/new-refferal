@@ -2,20 +2,26 @@ package services
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
 	"new-refferal/models"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func (s *ServiceFacade) OpenBox(user *models.User) (*models.RewardShow, error) {
+const (
+	usersToParticipate = 10.0
+)
+
+func (s *ServiceFacade) OpenBox(user *models.User) error {
 	info, err := s.dao.GetAvailableBoxesByUserID(user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("dao.GetAvailableBoxesByUserID: %s", err.Error())
+		return fmt.Errorf("dao.GetAvailableBoxesByUserID: %s", err.Error())
 	}
 
 	if info.Available <= 0 {
-		return nil, fmt.Errorf("you don't have boxes to open")
+		return fmt.Errorf("you don't have boxes to open")
 	}
 	date := strings.Split(time.Now().Format("2006-01-02"), "-")
 	year, _ := strconv.Atoi(date[0])
@@ -31,15 +37,29 @@ func (s *ServiceFacade) OpenBox(user *models.User) (*models.RewardShow, error) {
 
 	pool, err := s.dao.GetRewardsPool()
 	if err != nil {
-		return nil, fmt.Errorf("dao.GetRewardsPool: %s", err.Error())
+		return fmt.Errorf("dao.GetRewardsPool: %s", err.Error())
 	}
 
-	/* formulas */
+	x1, x2 := 1.0, usersToParticipate
+	y1, y2 := 1.0, (pool.Available/float64(days))*0.9
 
-	err = s.dao.CreateAndUpdateRewardsState(pool, user, 5.5 /********************/)
+	a := math.Log(y1) - (math.Log(y1/y2)*x1)/(x1-x2)
+	b := math.Log(y1/y2) / (x1 - x2)
+
+	rand.Seed(time.Now().UnixNano())
+	min := 1
+	max := usersToParticipate
+	r := rand.Intn(int(max)-min+1) + min
+
+	winAmount := -(a * math.Exp(b*float64(r)))
+
+	pool.Available = pool.Available - winAmount
+	pool.Sent = pool.Sent + winAmount
+
+	err = s.dao.CreateAndUpdateRewardsState(pool, user, winAmount)
 	if err != nil {
-		return nil, fmt.Errorf("dao.CreateAndUpdateRewardsState: %s", err.Error())
+		return fmt.Errorf("dao.CreateAndUpdateRewardsState: %s", err.Error())
 	}
 
-	return nil, nil
+	return nil
 }
