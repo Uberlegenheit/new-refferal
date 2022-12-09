@@ -103,7 +103,7 @@ func (api *API) initialize() {
 		Realm:            "test zone",
 		Key:              []byte("secret key"),
 		Timeout:          time.Hour,
-		MaxRefresh:       time.Hour,
+		MaxRefresh:       time.Hour * 24 * 7,
 		IdentityKey:      "wallet_address",
 		SigningAlgorithm: "HS512",
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
