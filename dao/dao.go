@@ -37,6 +37,7 @@ type (
 
 		SaveReward(reward *models.Reward) (*models.Reward, error)
 		UpdateReward(reward *models.Reward) error
+		SaveTXAndUpdateReward(info *models.StakeAndBoxStat, newStake, reward float64) error
 		GetUserRewardsByID(id uint64) ([]models.RewardShow, error)
 		GetAllRewards() ([]models.RewardShow, error)
 		GetTotalRewardStats() ([]models.TotalReward, error)

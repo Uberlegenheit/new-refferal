@@ -22,7 +22,7 @@ func (db *Postgres) GetTotalStats(req filters.PeriodInfoRequest) ([]models.Total
 						 where s.status = true and (s.created >= ? and s.created <= ?)) as invited_sum,
 						(select coalesce(sum(s.boxes_given), 0)
 						 from stakes s
-						 where s.created >= ? and s.created <= ?) as boxes_given,
+						 where s.status = true and (s.created >= ? and s.created <= ?)) as boxes_given,
 						(select coalesce(count(r.id), 0)
 						 from rewards r
 						 where r.type_id = 2 and (r.created >= ? and r.created <= ?)) as boxes_opened,
@@ -65,7 +65,7 @@ func (db *Postgres) GetTotalStakeStats(req filters.PeriodInfoRequest) ([]models.
 						inner join stakes s on u.id = s.user_id
 						inner join stake_types st on s.type_id = st.id
 						inner join boxes b on u.id = b.user_id`).
-		Where("s.created >= ? AND s.created <= ?", req.Start, req.End).
+		Where("s.status = true AND (s.created >= ? AND s.created <= ?)", req.Start, req.End).
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -94,7 +94,7 @@ func (db *Postgres) GetFriendsStakeStats(req filters.PeriodInfoRequest) ([]model
 						inner join stakes s on u.id = s.user_id
 						inner join stake_types st on s.type_id = st.id
 						inner join boxes b on u.id = b.user_id`).
-		Where("s.created >= ? AND s.created <= ?", req.Start, req.End).
+		Where("s.status = true AND (s.created >= ? AND s.created <= ?)", req.Start, req.End).
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil

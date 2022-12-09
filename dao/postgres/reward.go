@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"new-refferal/models"
+	"time"
 )
 
 func (db *Postgres) SaveReward(reward *models.Reward) (*models.Reward, error) {
@@ -29,7 +30,9 @@ func (db *Postgres) UpdateReward(reward *models.Reward) error {
 		changes["amount"] = reward.Amount
 	}
 
-	result := db.db.Model(&models.Reward{}).Updates(changes)
+	result := db.db.Model(&models.Reward{}).
+		Updates(changes).
+		Where("user_id = ? and type_id = ?", reward.UserID, reward.TypeID)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -139,6 +142,47 @@ func (db *Postgres) CreateAndUpdateRewardsState(pool *models.RewardsPool, user *
 			TypeID: models.BoxRewardType,
 			Amount: amount,
 		}).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *Postgres) SaveTXAndUpdateReward(info *models.StakeAndBoxStat, stake, reward float64) error {
+	err := db.db.Transaction(func(tx *gorm.DB) error {
+		if info.TotalStake != stake {
+			if err := tx.Model(&models.Stake{}).
+				Update("status", false).
+				Where("user_id = ?", info.UserID).Error; err != nil {
+				return err
+			}
+
+			if err := tx.Create(&models.Stake{
+				UserID:  info.UserID,
+				Amount:  stake,
+				Status:  true,
+				Hash:    "updated delegation balance",
+				Created: time.Now(),
+			}).Error; err != nil {
+				return err
+			}
+		}
+
+		if err := db.db.Model(&models.Reward{}).
+			Updates(&models.Reward{
+				UserID:  info.UserID,
+				Status:  "updated",
+				TypeID:  1,
+				Amount:  reward,
+				Hash:    "updated rewards",
+				Created: time.Now(),
+			}).Where("user_id = ? and type_id = ?", info.UserID, 2).Error; err != nil {
 			return err
 		}
 

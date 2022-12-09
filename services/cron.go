@@ -101,34 +101,39 @@ func (s *ServiceFacade) parseDelegations() error {
 			return fmt.Errorf("dao.GetStakeAndBoxUserStatByID: %s", err.Error())
 		}
 
-		if info.TotalStake != stakeF {
-			err := s.dao.SetUserDelegationsFalse(users[i].ID)
-			if err != nil {
-				return fmt.Errorf("dao.SetUserDelegationsFalse: %s", err.Error())
-			}
-			_, err = s.dao.SaveDelegationTx(&models.Stake{
-				UserID:  users[i].ID,
-				Amount:  stakeF,
-				Status:  true,
-				Hash:    "updated delegation balance",
-				Created: time.Now(),
-			})
-			if err != nil {
-				return fmt.Errorf("dao.SaveDelegationTx: %s", err.Error())
-			}
+		err = s.dao.SaveTXAndUpdateReward(info, stakeF, rewardF)
+		if err != nil {
+			return fmt.Errorf("dao.SaveTXAndUpdateReward: %s", err.Error())
 		}
 
-		err = s.dao.UpdateReward(&models.Reward{
-			UserID:  users[i].ID,
-			Status:  "updated",
-			TypeID:  1,
-			Amount:  rewardF,
-			Hash:    "updated rewards",
-			Created: time.Now(),
-		})
-		if err != nil {
-			return fmt.Errorf("dao.UpdateReward: %s", err.Error())
-		}
+		//if info.TotalStake != stakeF {
+		//	err := s.dao.SetUserDelegationsFalse(users[i].ID)
+		//	if err != nil {
+		//		return fmt.Errorf("dao.SetUserDelegationsFalse: %s", err.Error())
+		//	}
+		//	_, err = s.dao.SaveDelegationTx(&models.Stake{
+		//		UserID:  users[i].ID,
+		//		Amount:  stakeF,
+		//		Status:  true,
+		//		Hash:    "updated delegation balance",
+		//		Created: time.Now(),
+		//	})
+		//	if err != nil {
+		//		return fmt.Errorf("dao.SaveDelegationTx: %s", err.Error())
+		//	}
+		//}
+		//
+		//err = s.dao.UpdateReward(&models.Reward{
+		//	UserID:  users[i].ID,
+		//	Status:  "updated",
+		//	TypeID:  1,
+		//	Amount:  rewardF,
+		//	Hash:    "updated rewards",
+		//	Created: time.Now(),
+		//})
+		//if err != nil {
+		//	return fmt.Errorf("dao.UpdateReward: %s", err.Error())
+		//}
 	}
 
 	return nil
