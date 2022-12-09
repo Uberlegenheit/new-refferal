@@ -182,11 +182,11 @@ func (api *API) initialize() {
 	authGroup := api.router.Group("/auth")
 	authGroup.Use(authMiddleware.MiddlewareFunc())
 	{
-		api.router.GET("/refresh", authMiddleware.RefreshHandler)
+		authGroup.GET("/refresh", authMiddleware.RefreshHandler)
 	}
 
 	adminGroup := authGroup.Group("/admin")
-	adminGroup.Use(api.SomeMiddleware())
+	adminGroup.Use(api.AdminMiddleware())
 	{
 		adminGroup.GET("/total_stats", api.GetTotalStats)
 		adminGroup.GET("/total_stake_stats", api.GetTotalStakeStats)
