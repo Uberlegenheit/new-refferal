@@ -185,7 +185,6 @@ func (api *API) initialize() {
 		adminGroup.GET("/total_stats", api.GetTotalStats)
 		adminGroup.GET("/total_stake_stats", api.GetTotalStakeStats)
 		adminGroup.GET("/friends_stake_stats", api.GetFriendsStakeStats)
-		adminGroup.GET("/friends_stake_stats", api.GetFriendsStakeStats)
 		adminGroup.GET("/reward_payment_stats", api.GetRewardPaymentStats)
 	}
 
