@@ -102,7 +102,7 @@ func (api *API) initialize() {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:            "test zone",
 		Key:              []byte("secret key"),
-		Timeout:          time.Hour,
+		Timeout:          time.Second * 10,
 		MaxRefresh:       time.Hour * 24 * 7,
 		IdentityKey:      "wallet_address",
 		SigningAlgorithm: "HS512",
