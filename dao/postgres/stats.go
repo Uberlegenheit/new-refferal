@@ -12,24 +12,33 @@ func (db *Postgres) GetTotalStats(req filters.PeriodInfoRequest) ([]models.Total
 
 	if err := db.db.Raw(`select (select coalesce(round(CAST(sum(s.amount) as numeric), 8), 0)
 						from stakes s
-						where s.status = true and s.type_id = 1) as stake_sum,
+						where s.status = true and s.type_id = 1 and (s.created >= ? and s.created <= ?)) as stake_sum,
 						(select coalesce(round(CAST(sum(s.amount) as numeric), 8), 0)
 						from stakes s
-						where s.status = true and s.type_id = 2) as redelegation_sum,
+						where s.status = true and s.type_id = 2 and (s.created >= ? and s.created <= ?)) as redelegation_sum,
 						(select coalesce(round(CAST(sum(s.amount) as numeric), 8), 0)
 						 from invitations i
-						  inner join stakes s on s.user_id = i.referral_id
-						 where s.status = true) as invited_sum,
-						(select coalesce(sum(b.opened+b.available), 0)
-						 from boxes b) as boxes_given,
-						(select coalesce(sum(b.opened), 0)
-						 from boxes b) as boxes_opened,
+						 inner join stakes s on s.user_id = i.referral_id
+						 where s.status = true and (s.created >= ? and s.created <= ?)) as invited_sum,
+						(select coalesce(sum(s.boxes_given), 0)
+						 from stakes s
+						 where s.created >= ? and s.created <= ?) as boxes_given,
+						(select coalesce(count(r.id), 0)
+						 from rewards r
+						 where r.type_id = 2 and (r.created >= ? and r.created <= ?)) as boxes_opened,
 						(select coalesce(round(CAST(sum(r.amount) as numeric), 8), 0)
 						 from rewards r
-						 where r.type_id = 2 and status = 'paid') as boxes_rewards,
+						 where r.type_id = 2 and status = 'paid' and (r.created >= ? and r.created <= ?)) as boxes_rewards,
 						(select coalesce(round(CAST(sum(r.amount) as numeric), 8), 0)
 						 from rewards r
-						 where r.type_id = 2 and status = 'pending') as boxes_unpaid`).
+						 where r.type_id = 2 and status = 'pending' and (r.created >= ? and r.created <= ?)) as boxes_unpaid`,
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End).
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
