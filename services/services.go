@@ -1,6 +1,7 @@
 package services
 
 import (
+	"new-refferal/filters"
 	"new-refferal/models"
 	"time"
 
@@ -24,6 +25,10 @@ type (
 		GetUserRewardsByID(user *models.User) ([]models.RewardShow, error)
 		GetAllRewards() ([]models.RewardShow, error)
 		GetTotalRewardStats() ([]models.TotalReward, error)
+		GetTotalStats(req filters.PeriodInfoRequest) ([]models.TotalStats, error)
+		GetTotalStakeStats(req filters.PeriodInfoRequest) ([]models.TotalStakeStats, error)
+		GetFriendsStakeStats(req filters.PeriodInfoRequest) ([]models.FriendStakeStats, error)
+		GetRewardPaymentStats(req filters.PeriodInfoRequest) ([]models.RewardPaymentsStats, error)
 		GetUsersInvitationsStats() ([]models.InvitationsStats, error)
 	}
 	Scheduler interface {

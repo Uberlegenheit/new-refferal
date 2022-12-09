@@ -16,6 +16,28 @@ func (db *Postgres) SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
 	return stake, nil
 }
 
+func (db *Postgres) SaveDelegationTxAndAddBoxes(stake *models.Stake) (*models.Stake, error) {
+	err := db.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(stake).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&models.Box{}).
+			Where("user_id = ?", stake.UserID).
+			Update("available", gorm.Expr("available+?", stake.BoxesGiven)).
+			Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return stake, err
+}
+
 func (db *Postgres) SetUserDelegationsFalse(id uint64) error {
 	result := db.db.Model(&models.Stake{}).Update("status", false).Where("user_id = ?", id)
 	if result.Error != nil {

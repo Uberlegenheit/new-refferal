@@ -5,6 +5,7 @@ import (
 	"new-refferal/conf"
 	"new-refferal/dao/cache"
 	"new-refferal/dao/postgres"
+	"new-refferal/filters"
 	"new-refferal/models"
 	"time"
 )
@@ -25,6 +26,7 @@ type (
 		GetLinkByUserID(id uint64) (*models.Link, error)
 
 		SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
+		SaveDelegationTxAndAddBoxes(stake *models.Stake) (*models.Stake, error)
 		SetUserDelegationsFalse(id uint64) error
 		GetInvitedUsersStakes(id uint64) ([]models.StakeShow, error)
 		GetStakeAndBoxUserStatByID(id uint64) (*models.StakeAndBoxStat, error)
@@ -38,6 +40,10 @@ type (
 		GetUserRewardsByID(id uint64) ([]models.RewardShow, error)
 		GetAllRewards() ([]models.RewardShow, error)
 		GetTotalRewardStats() ([]models.TotalReward, error)
+		GetTotalStats(req filters.PeriodInfoRequest) ([]models.TotalStats, error)
+		GetTotalStakeStats(req filters.PeriodInfoRequest) ([]models.TotalStakeStats, error)
+		GetFriendsStakeStats(req filters.PeriodInfoRequest) ([]models.FriendStakeStats, error)
+		GetRewardPaymentStats(req filters.PeriodInfoRequest) ([]models.RewardPaymentsStats, error)
 		GetUsersInvitationsStats() ([]models.InvitationsStats, error)
 
 		GetRewardsPool() (*models.RewardsPool, error)

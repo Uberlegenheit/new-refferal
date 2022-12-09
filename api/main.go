@@ -168,7 +168,7 @@ func (api *API) initialize() {
 	api.router.POST("/register", authMiddleware.LoginHandler /*api.SignIn*/)
 	api.router.POST("/delegate", api.Delegate)
 
-	api.router.GET("/total_stats", api.GetTotalRewardStats)
+	api.router.GET("/rewards_total_stats", api.GetTotalRewardStats)
 	api.router.GET("/all_rewards", api.GetAllRewards)
 	api.router.GET("/invitations_stats", api.GetInvitationsStats)
 
@@ -179,12 +179,22 @@ func (api *API) initialize() {
 
 	api.router.POST("/gets", api.Gets)
 
-	mGroup := api.router.Group("/m")
-	mGroup.Use(authMiddleware.MiddlewareFunc() /*api.SomeMiddleware()*/)
+	adminGroup := api.router.Group("/admin")
+	adminGroup.Use(authMiddleware.MiddlewareFunc())
 	{
-		mGroup.POST("/name", api.Name)
-		mGroup.GET("/read/:id", api.Read)
+		adminGroup.GET("/total_stats", api.GetTotalStats)
+		adminGroup.GET("/total_stake_stats", api.GetTotalStakeStats)
+		adminGroup.GET("/friends_stake_stats", api.GetFriendsStakeStats)
+		adminGroup.GET("/friends_stake_stats", api.GetFriendsStakeStats)
+		adminGroup.GET("/reward_payment_stats", api.GetRewardPaymentStats)
 	}
+
+	//mGroup := api.router.Group("/m")
+	//mGroup.Use(authMiddleware.MiddlewareFunc() /*api.SomeMiddleware()*/)
+	//{
+	//	mGroup.POST("/name", api.Name)
+	//	mGroup.GET("/read/:id", api.Read)
+	//}
 	api.server = &http.Server{Addr: fmt.Sprintf(":%d", api.cfg.API.ListenOnPort), Handler: api.router}
 }
 

@@ -31,21 +31,3 @@ func (s *ServiceFacade) GetAllRewards() ([]models.RewardShow, error) {
 
 	return rewards, nil
 }
-
-func (s *ServiceFacade) GetTotalRewardStats() ([]models.TotalReward, error) {
-	rewards, err := s.dao.GetTotalRewardStats()
-	if err != nil {
-		return nil, fmt.Errorf("dao.GetTotalRewardStats: %s", err.Error())
-	}
-
-	return rewards, nil
-}
-
-func (s *ServiceFacade) GetUsersInvitationsStats() ([]models.InvitationsStats, error) {
-	stats, err := s.dao.GetUsersInvitationsStats()
-	if err != nil {
-		return nil, fmt.Errorf("dao.GetUsersInvitationsStats: %s", err.Error())
-	}
-
-	return stats, nil
-}

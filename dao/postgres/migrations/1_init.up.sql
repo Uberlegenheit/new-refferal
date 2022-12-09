@@ -28,12 +28,23 @@ create table if not exists boxes
     opened    int4 default 0 not null
 );
 
+create table if not exists stake_types
+(
+    id     serial not null constraint stake_types_pk primary key,
+    "name" varchar(25) not null
+);
+
+INSERT INTO stake_types(id, name) VALUES (1, 'stake');
+INSERT INTO stake_types(id, name) VALUES (2, 'redelegation');
+
 create table if not exists stakes
 (
     id        serial not null constraint stakes_pk primary key,
     user_id   int4 references users(id)  on update cascade on delete restrict not null,
     amount    float8                  not null,
     status    boolean   default true  not null,
+    type_id   int4   references stake_types(id) default 1  not null,
+    boxes_given int4 default 0  not null,
     tx_hash   varchar(150)            not null,
     created   timestamp default now() not null
 );

@@ -26,17 +26,6 @@ func (api *API) UpdateReward(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
-func (api *API) GetTotalRewardStats(c *gin.Context) {
-	rewards, err := api.services.GetTotalRewardStats()
-	if err != nil {
-		log.Error("[api] GetTotalRewardStats: GetTotalRewardStats", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, rewards)
-}
-
 func (api *API) GetAllRewards(c *gin.Context) {
 	rewards, err := api.services.GetAllRewards()
 	if err != nil {
@@ -103,15 +92,4 @@ func (api *API) GetInvitedFriends(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, invited)
-}
-
-func (api *API) GetInvitationsStats(c *gin.Context) {
-	stats, err := api.services.GetUsersInvitationsStats()
-	if err != nil {
-		log.Error("[api] GetInvitationsStats: GetUsersInvitationsStats", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, stats)
 }
