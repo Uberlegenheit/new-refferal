@@ -27,7 +27,7 @@ type (
 )
 
 const (
-	Service = "hr-board"
+	Service = "new-referral"
 )
 
 func GetNewConfig() (cfg Config, err error) {

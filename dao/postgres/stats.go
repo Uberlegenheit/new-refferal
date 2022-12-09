@@ -10,8 +10,7 @@ import (
 func (db *Postgres) GetTotalStats(req filters.PeriodInfoRequest) ([]models.TotalStats, error) {
 	stats := make([]models.TotalStats, 0)
 
-	if err := db.db.Model(&models.TotalStats{}).
-		Select(`select (select coalesce(round(CAST(sum(s.amount) as numeric), 8), 0)
+	if err := db.db.Raw(`select (select coalesce(round(CAST(sum(s.amount) as numeric), 8), 0)
 						from stakes s
 						where s.status = true and s.type_id = 1) as stake_sum,
 						(select coalesce(round(CAST(sum(s.amount) as numeric), 8), 0)

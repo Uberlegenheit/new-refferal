@@ -166,6 +166,7 @@ func (api *API) initialize() {
 	api.router.GET("/health", api.Health)
 
 	api.router.POST("/register", authMiddleware.LoginHandler /*api.SignIn*/)
+	api.router.POST("/refresh", authMiddleware.RefreshHandler)
 	api.router.POST("/delegate", api.Delegate)
 
 	api.router.GET("/rewards_total_stats", api.GetTotalRewardStats)
