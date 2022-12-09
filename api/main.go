@@ -183,6 +183,7 @@ func (api *API) initialize() {
 	authGroup.Use(authMiddleware.MiddlewareFunc())
 	{
 		authGroup.GET("/refresh", authMiddleware.RefreshHandler)
+		authGroup.GET("/logout", authMiddleware.LogoutHandler)
 	}
 
 	adminGroup := authGroup.Group("/admin")
