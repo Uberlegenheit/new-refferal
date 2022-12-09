@@ -59,7 +59,7 @@ func (api *API) GetMyRewards(c *gin.Context) {
 func (api *API) GetMyLink(c *gin.Context) {
 	val, ok := c.Get("user")
 	if !ok {
-		log.Error("[api] GetMyRewards: c.Get", zap.Error(fmt.Errorf("user context is empty")))
+		log.Error("[api] GetMyLink: c.Get", zap.Error(fmt.Errorf("user context is empty")))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user context is empty"})
 		return
 	}
@@ -78,7 +78,7 @@ func (api *API) GetMyLink(c *gin.Context) {
 func (api *API) GetInvitedFriends(c *gin.Context) {
 	val, ok := c.Get("user")
 	if !ok {
-		log.Error("[api] GetMyRewards: c.Get", zap.Error(fmt.Errorf("user context is empty")))
+		log.Error("[api] GetInvitedFriends: c.Get", zap.Error(fmt.Errorf("user context is empty")))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user context is empty"})
 		return
 	}

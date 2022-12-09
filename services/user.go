@@ -29,6 +29,15 @@ func (s *ServiceFacade) LogInOrRegister(user *models.User) (*models.User, error)
 	return usr, nil
 }
 
+func (s *ServiceFacade) GetUserByWalletAddress(addr string) (*models.User, error) {
+	usr, err := s.dao.GetUserByWalletAddress(addr)
+	if err != nil {
+		return nil, fmt.Errorf("dao.GetUserByWalletAddress: %s", err.Error())
+	}
+
+	return usr, nil
+}
+
 // a = 97, A = 65, z = 122, Z = 90
 func getNewCode(code string) string {
 	newCode := make([]string, 0)

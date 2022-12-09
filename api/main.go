@@ -165,42 +165,38 @@ func (api *API) initialize() {
 	api.router.GET("/", api.Index)
 	api.router.GET("/health", api.Health)
 
-	api.router.POST("/register", authMiddleware.LoginHandler)
-	api.router.POST("/delegate", api.Delegate)
-
-	api.router.GET("/rewards_total_stats", api.GetTotalRewardStats)
-	api.router.GET("/all_rewards", api.GetAllRewards)
-	api.router.GET("/invitations_stats", api.GetInvitationsStats)
-
-	api.router.GET("/my_link", api.GetMyLink)
-	api.router.GET("/invited", api.GetInvitedFriends)
-
-	api.router.GET("/open_box", api.OpenBox)
-
-	api.router.POST("/gets", api.Gets)
+	api.router.POST("/register", api.SignIn)
+	api.router.POST("/refresh", api.Refresh)
 
 	authGroup := api.router.Group("/auth")
-	authGroup.Use(authMiddleware.MiddlewareFunc())
+	authGroup.Use(api.AuthMiddleware())
 	{
-		authGroup.GET("/refresh", authMiddleware.RefreshHandler)
-		authGroup.GET("/logout", authMiddleware.LogoutHandler)
+		authGroup.GET("/me", api.Me)
+
+		authGroup.POST("/delegate", api.Delegate)
+
+		authGroup.GET("/rewards_total_stats", api.GetTotalRewardStats)
+		authGroup.GET("/all_rewards", api.GetAllRewards)
+		authGroup.GET("/invitations_stats", api.GetInvitationsStats)
+
+		authGroup.GET("/my_link", api.GetMyLink)
+		authGroup.GET("/invited", api.GetInvitedFriends)
+
+		authGroup.POST("/open_box", api.OpenBox)
+
+		authGroup.POST("/logout", api.SignOut)
 	}
 
 	adminGroup := authGroup.Group("/admin")
 	adminGroup.Use(api.AdminMiddleware())
 	{
+		adminGroup.GET("/me", api.Me)
 		adminGroup.GET("/total_stats", api.GetTotalStats)
 		adminGroup.GET("/total_stake_stats", api.GetTotalStakeStats)
 		adminGroup.GET("/friends_stake_stats", api.GetFriendsStakeStats)
 		adminGroup.GET("/reward_payment_stats", api.GetRewardPaymentStats)
 	}
 
-	//mGroup := api.router.Group("/m")
-	//mGroup.Use(authMiddleware.MiddlewareFunc() /*api.SomeMiddleware()*/)
-	//{
-	//	mGroup.POST("/name", api.Name)
-	//	mGroup.GET("/read/:id", api.Read)
-	//}
 	api.server = &http.Server{Addr: fmt.Sprintf(":%d", api.cfg.API.ListenOnPort), Handler: api.router}
 }
 

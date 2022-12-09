@@ -1,6 +1,8 @@
 package services
 
 import (
+	"github.com/gin-gonic/gin"
+	"net/http"
 	"new-refferal/filters"
 	"new-refferal/models"
 	"time"
@@ -13,6 +15,7 @@ import (
 type (
 	Service interface {
 		LogInOrRegister(user *models.User) (*models.User, error)
+		GetUserByWalletAddress(addr string) (*models.User, error)
 
 		GetLinkByUserID(user *models.User) (*models.Link, error)
 
@@ -30,6 +33,14 @@ type (
 		GetFriendsStakeStats(req filters.PeriodInfoRequest) ([]models.FriendStakeStats, error)
 		GetRewardPaymentStats(req filters.PeriodInfoRequest) ([]models.RewardPaymentsStats, error)
 		GetUsersInvitationsStats() ([]models.InvitationsStats, error)
+
+		CreateToken(walletAddr string) (*models.TokenDetails, error)
+		CreateAuth(walletAddr string, td *models.TokenDetails) error
+		ExtractTokenMetadata(c *gin.Context) (*models.AccessDetails, error)
+		Refresh(r *http.Request) (*models.TokenDetails, error)
+
+		FetchAuth(authD *models.AccessDetails) (string, error)
+		DeleteAuth(UUID ...string) error
 	}
 	Scheduler interface {
 		AddProcessWithInterval(process scheduler.Process, interval time.Duration)
