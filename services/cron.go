@@ -15,13 +15,14 @@ import (
 )
 
 const (
-	//https://lcd-cosmos.everstake.one/aff_stage_lcd_molodyk_0MsNYTWMwH5uHiqmJuNJ
 	CosmosAPI           string = "lcd-cosmos.everstake.one"
 	EverstakeCosmosAddr string = "cosmosvaloper1tflk30mq5vgqjdly92kkhhq3raev2hnz6eete3"
 	RewardsPath         string = "%s/cosmos/distribution/v1beta1/delegators/%s/rewards/%s"
 	StakePath           string = "%s/cosmos/staking/v1beta1/validators/%s/delegations/%s"
 	TxPath              string = "%s/cosmos/tx/v1beta1/txs/%s"
 )
+
+var NodeToken = os.Getenv("NODE_TOKEN")
 
 func (s *ServiceFacade) InitCron(cron *gron.Cron) {
 	dur := time.Hour * 6
@@ -45,7 +46,7 @@ func (s *ServiceFacade) parseDelegations() error {
 		u := url.URL{
 			Scheme: "https",
 			Host:   CosmosAPI,
-			Path:   fmt.Sprintf(RewardsPath, os.Getenv("NODE_TOKEN"), users[i].WalletAddress, EverstakeCosmosAddr),
+			Path:   fmt.Sprintf(RewardsPath, NodeToken, users[i].WalletAddress, EverstakeCosmosAddr),
 		}
 
 		resp, err := http.Get(u.String())
@@ -63,7 +64,7 @@ func (s *ServiceFacade) parseDelegations() error {
 		u = url.URL{
 			Scheme: "https",
 			Host:   CosmosAPI,
-			Path:   fmt.Sprintf(StakePath, os.Getenv("NODE_TOKEN"), EverstakeCosmosAddr, users[i].WalletAddress),
+			Path:   fmt.Sprintf(StakePath, NodeToken, EverstakeCosmosAddr, users[i].WalletAddress),
 		}
 
 		resp, err = http.Get(u.String())
