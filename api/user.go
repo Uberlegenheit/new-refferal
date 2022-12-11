@@ -10,14 +10,30 @@ import (
 )
 
 func (api *API) Me(c *gin.Context) {
-	user, ok := c.Get("user")
+	val, ok := c.Get("user")
 	if !ok {
 		log.Error("[api] Me: Get", zap.Error(fmt.Errorf("cannot fetch active user")))
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "cannot fetch active user"})
 		return
 	}
+	user, ok := val.(models.User)
+	if !ok {
+		log.Error("[api] Me: cast", zap.Error(fmt.Errorf("cannot cast active user")))
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "cannot cast active user"})
+		return
+	}
 
-	c.JSON(http.StatusOK, user)
+	box, err := api.services.GetAvailableBoxesByUserID(user.ID)
+	if err != nil {
+		log.Error("[api] Me: GetAvailableBoxesByUserID", zap.Error(err))
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"user": user,
+		"box":  box,
+	})
 }
 
 func (api *API) SignIn(c *gin.Context) {

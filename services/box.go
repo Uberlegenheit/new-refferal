@@ -63,3 +63,12 @@ func (s *ServiceFacade) OpenBox(user *models.User) error {
 
 	return nil
 }
+
+func (s *ServiceFacade) GetAvailableBoxesByUserID(userID uint64) (*models.Box, error) {
+	box, err := s.dao.GetAvailableBoxesByUserID(userID)
+	if err != nil {
+		return nil, fmt.Errorf("dao.GetAvailableBoxesByUserID: %s", err.Error())
+	}
+
+	return box, nil
+}

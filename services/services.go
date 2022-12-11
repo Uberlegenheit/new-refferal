@@ -23,6 +23,7 @@ type (
 		GetInvitedUsersStakes(user *models.User) ([]models.StakeShow, error)
 
 		OpenBox(user *models.User) error
+		GetAvailableBoxesByUserID(userID uint64) (*models.Box, error)
 
 		UpdateReward(reward *models.Reward) error
 		GetUserRewardsByID(user *models.User) ([]models.RewardShow, error)
