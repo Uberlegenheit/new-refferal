@@ -11,7 +11,7 @@ func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake) (*models.Stake, er
 		return nil, fmt.Errorf("dao.GetStakeAndBoxUserStatByID: %s", err.Error())
 	}
 
-	boxesAvailable := int64((stats.TotalStake + stake.Amount) / 10.0)
+	boxesAvailable := int64((stats.TotalStake + stake.Amount) / 0.001 /*10.0*/)
 	newBoxes := boxesAvailable - stats.TotalBoxes
 	if newBoxes != 0 {
 		err := s.dao.AddBoxesByUserID(stake.UserID, newBoxes)
