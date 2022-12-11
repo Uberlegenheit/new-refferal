@@ -39,10 +39,7 @@ func checkHashAndSum(stake *models.Stake) (bool, error) {
 		}
 
 		stakeD := decimal.New(stakeStr, -6)
-		stakeF, ok := stakeD.Float64()
-		if !ok {
-			return false, fmt.Errorf("stakeD.Float64()")
-		}
+		stakeF, _ := stakeD.Float64()
 
 		if stakeF != stake.Amount {
 			return false, nil
@@ -92,7 +89,13 @@ func (s *ServiceFacade) GetDelegationByTxHash(stake *models.Stake) (*models.Stak
 		return nil, fmt.Errorf("dao.GetDelegationByTxHash: %s", err.Error())
 	}
 
-	return dbStake, nil
+	if dbStake != nil {
+		if dbStake.ID != 0 {
+			return dbStake, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func (s *ServiceFacade) GetInvitedUsersStakes(user *models.User) ([]models.StakeShow, error) {

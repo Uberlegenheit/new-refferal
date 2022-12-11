@@ -87,15 +87,9 @@ func (s *ServiceFacade) parseDelegations() error {
 		rewardD := decimal.NewFromFloat(reward).Div(decimal.New(1, 6))
 		stakeD := decimal.New(stake, -6)
 
-		rewardF, ok := rewardD.Float64()
-		if !ok {
-			return fmt.Errorf("rewardD.Float64()")
-		}
+		rewardF, _ := rewardD.Float64()
 
-		stakeF, ok := stakeD.Float64()
-		if !ok {
-			return fmt.Errorf("stakeD.Float64()")
-		}
+		stakeF, _ := stakeD.Float64()
 
 		info, err := s.dao.GetStakeAndBoxUserStatByID(users[i].ID)
 		if err != nil {

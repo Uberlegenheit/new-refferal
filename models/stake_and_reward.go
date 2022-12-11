@@ -39,5 +39,5 @@ type msg struct {
 }
 
 type TxBody struct {
-	Body []msg `json:"body"`
+	Body []msg `json:"messages"`
 }
