@@ -20,10 +20,22 @@ func (api *API) Delegate(c *gin.Context) {
 
 	var stake models.Stake
 	if err := c.ShouldBindJSON(&stake); err != nil {
+		log.Error("[api] GetMyLink: ShouldBindJSON", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	stake.UserID = user.ID
+
+	dbStake, err := api.services.GetDelegationByTxHash(&stake)
+	if err != nil {
+		log.Error("[api] GetMyLink: GetDelegationByTxHash", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if dbStake != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "hash already registered"})
+		return
+	}
 
 	stk, err := api.services.SaveDelegationTx(&stake)
 	if err != nil {

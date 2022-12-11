@@ -25,3 +25,19 @@ type apiBalance struct {
 	Denom  string `json:"denom"`
 	Amount string `json:"amount"`
 }
+
+type TxFetch struct {
+	Tx Tx `json:"tx"`
+}
+
+type Tx struct {
+	Body TxBody `json:"body"`
+}
+
+type msg struct {
+	Amount apiBalance `json:"amount"`
+}
+
+type TxBody struct {
+	Body []msg `json:"body"`
+}

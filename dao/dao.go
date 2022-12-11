@@ -27,6 +27,7 @@ type (
 
 		SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
 		SaveDelegationTxAndAddBoxes(stake *models.Stake) (*models.Stake, error)
+		GetDelegationByTxHash(stake *models.Stake) (*models.Stake, error)
 		SetUserDelegationsFalse(id uint64) error
 		GetInvitedUsersStakes(id uint64) ([]models.StakeShow, error)
 		GetStakeAndBoxUserStatByID(id uint64) (*models.StakeAndBoxStat, error)

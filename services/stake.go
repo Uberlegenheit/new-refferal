@@ -1,11 +1,68 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/shopspring/decimal"
+	"net/http"
+	"net/url"
 	"new-refferal/models"
+	"strconv"
 )
 
+func checkHashAndSum(stake *models.Stake) (bool, error) {
+	u := url.URL{
+		Scheme: "https",
+		Host:   CosmosAPI,
+		Path:   fmt.Sprintf(TxPath, stake.Hash),
+	}
+
+	resp, err := http.Get(u.String())
+	if err != nil {
+		return false, fmt.Errorf("http.Get: %s", err.Error())
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return false, nil
+	}
+
+	var tx models.TxFetch
+	err = json.NewDecoder(resp.Body).Decode(&tx)
+	if err != nil {
+		return false, err
+	}
+
+	if len(tx.Tx.Body.Body) != 0 {
+		stakeStr, err := strconv.ParseInt(tx.Tx.Body.Body[0].Amount.Amount, 10, 64)
+		if err != nil {
+			return false, err
+		}
+
+		stakeD := decimal.New(stakeStr, -6)
+		stakeF, ok := stakeD.Float64()
+		if !ok {
+			return false, fmt.Errorf("stakeD.Float64()")
+		}
+
+		if stakeF != stake.Amount {
+			return false, nil
+		}
+	} else {
+		return false, fmt.Errorf("msg length is 0")
+	}
+
+	return true, nil
+}
+
 func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake) (*models.Stake, error) {
+	ok, err := checkHashAndSum(stake)
+	if err != nil {
+		return nil, fmt.Errorf("checkHashAndSum: %s", err.Error())
+	}
+	if !ok {
+		return nil, fmt.Errorf("checkHashAndSum: transaction differs from imput data")
+	}
+
 	stats, err := s.dao.GetStakeAndBoxUserStatByID(stake.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("dao.GetStakeAndBoxUserStatByID: %s", err.Error())
@@ -27,6 +84,15 @@ func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake) (*models.Stake, er
 	}
 
 	return stake, nil
+}
+
+func (s *ServiceFacade) GetDelegationByTxHash(stake *models.Stake) (*models.Stake, error) {
+	dbStake, err := s.dao.GetDelegationByTxHash(stake)
+	if err != nil {
+		return nil, fmt.Errorf("dao.GetDelegationByTxHash: %s", err.Error())
+	}
+
+	return dbStake, nil
 }
 
 func (s *ServiceFacade) GetInvitedUsersStakes(user *models.User) ([]models.StakeShow, error) {

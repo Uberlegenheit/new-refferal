@@ -20,6 +20,7 @@ type (
 		GetLinkByUserID(user *models.User) (*models.Link, error)
 
 		SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
+		GetDelegationByTxHash(stake *models.Stake) (*models.Stake, error)
 		GetInvitedUsersStakes(user *models.User) ([]models.StakeShow, error)
 
 		OpenBox(user *models.User) error

@@ -15,9 +15,10 @@ import (
 
 const (
 	CosmosAPI           string = "api.cosmos.network"
-	RewardsPath         string = "cosmos/distribution/v1beta1/delegators/%s/rewards/%s"
 	EverstakeCosmosAddr string = "cosmosvaloper1tflk30mq5vgqjdly92kkhhq3raev2hnz6eete3"
+	RewardsPath         string = "cosmos/distribution/v1beta1/delegators/%s/rewards/%s"
 	StakePath           string = "cosmos/staking/v1beta1/validators/%s/delegations/%s"
+	TxPath              string = "cosmos/tx/v1beta1/txs/%s"
 )
 
 func (s *ServiceFacade) InitCron(cron *gron.Cron) {

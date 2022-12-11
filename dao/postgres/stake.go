@@ -67,6 +67,23 @@ func (db *Postgres) GetInvitedUsersStakes(id uint64) ([]models.StakeShow, error)
 	return stakes, nil
 }
 
+func (db *Postgres) GetDelegationByTxHash(stake *models.Stake) (*models.Stake, error) {
+	dbStake := new(models.Stake)
+
+	if err := db.db.Model(&models.Stake{}).
+		Select("*").
+		Table(models.StakesTable).
+		Where("tx_hash = ?", stake.Hash).
+		Scan(&dbStake).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return dbStake, nil
+}
+
 func (db *Postgres) GetStakeAndBoxUserStatByID(id uint64) (*models.StakeAndBoxStat, error) {
 	stats := new(models.StakeAndBoxStat)
 
