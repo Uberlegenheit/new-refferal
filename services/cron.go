@@ -22,8 +22,6 @@ const (
 	TxPath              string = "%s/cosmos/tx/v1beta1/txs/%s"
 )
 
-var NodeToken = os.Getenv("NODE_TOKEN")
-
 func (s *ServiceFacade) InitCron(cron *gron.Cron) {
 	dur := time.Hour * 6
 	log.Infof("Scheduled delegations parse every %s", dur)
@@ -46,7 +44,7 @@ func (s *ServiceFacade) parseDelegations() error {
 		u := url.URL{
 			Scheme: "https",
 			Host:   CosmosAPI,
-			Path:   fmt.Sprintf(RewardsPath, NodeToken, users[i].WalletAddress, EverstakeCosmosAddr),
+			Path:   fmt.Sprintf(RewardsPath, os.Getenv("NODE_TOKEN"), users[i].WalletAddress, EverstakeCosmosAddr),
 		}
 
 		resp, err := http.Get(u.String())
@@ -64,7 +62,7 @@ func (s *ServiceFacade) parseDelegations() error {
 		u = url.URL{
 			Scheme: "https",
 			Host:   CosmosAPI,
-			Path:   fmt.Sprintf(StakePath, NodeToken, EverstakeCosmosAddr, users[i].WalletAddress),
+			Path:   fmt.Sprintf(StakePath, os.Getenv("NODE_TOKEN"), EverstakeCosmosAddr, users[i].WalletAddress),
 		}
 
 		resp, err = http.Get(u.String())

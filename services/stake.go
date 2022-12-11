@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"new-refferal/models"
+	"os"
 	"strconv"
 )
 
@@ -14,7 +15,7 @@ func checkHashAndSum(stake *models.Stake) (bool, error) {
 	u := url.URL{
 		Scheme: "https",
 		Host:   CosmosAPI,
-		Path:   fmt.Sprintf(TxPath, NodeToken, stake.Hash),
+		Path:   fmt.Sprintf(TxPath, os.Getenv("NODE_TOKEN"), stake.Hash),
 	}
 
 	resp, err := http.Get(u.String())
