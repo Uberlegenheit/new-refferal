@@ -190,7 +190,6 @@ func (api *API) initialize() {
 	adminGroup := authGroup.Group("/admin")
 	adminGroup.Use(api.AdminMiddleware())
 	{
-		adminGroup.GET("/me", api.Me)
 		adminGroup.GET("/total_stats", api.GetTotalStats)
 		adminGroup.GET("/total_stake_stats", api.GetTotalStakeStats)
 		adminGroup.GET("/friends_stake_stats", api.GetFriendsStakeStats)
