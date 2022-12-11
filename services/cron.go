@@ -9,16 +9,18 @@ import (
 	"net/http"
 	"net/url"
 	"new-refferal/models"
+	"os"
 	"strconv"
 	"time"
 )
 
 const (
-	CosmosAPI           string = "api.cosmos.network"
+	//https://lcd-cosmos.everstake.one/aff_stage_lcd_molodyk_0MsNYTWMwH5uHiqmJuNJ
+	CosmosAPI           string = "lcd-cosmos.everstake.one"
 	EverstakeCosmosAddr string = "cosmosvaloper1tflk30mq5vgqjdly92kkhhq3raev2hnz6eete3"
-	RewardsPath         string = "cosmos/distribution/v1beta1/delegators/%s/rewards/%s"
-	StakePath           string = "cosmos/staking/v1beta1/validators/%s/delegations/%s"
-	TxPath              string = "cosmos/tx/v1beta1/txs/%s"
+	RewardsPath         string = "%s/cosmos/distribution/v1beta1/delegators/%s/rewards/%s"
+	StakePath           string = "%s/cosmos/staking/v1beta1/validators/%s/delegations/%s"
+	TxPath              string = "%s/cosmos/tx/v1beta1/txs/%s"
 )
 
 func (s *ServiceFacade) InitCron(cron *gron.Cron) {
@@ -43,7 +45,7 @@ func (s *ServiceFacade) parseDelegations() error {
 		u := url.URL{
 			Scheme: "https",
 			Host:   CosmosAPI,
-			Path:   fmt.Sprintf(RewardsPath, users[i].WalletAddress, EverstakeCosmosAddr),
+			Path:   fmt.Sprintf(RewardsPath, os.Getenv("NODE_TOKEN"), users[i].WalletAddress, EverstakeCosmosAddr),
 		}
 
 		resp, err := http.Get(u.String())
@@ -61,7 +63,7 @@ func (s *ServiceFacade) parseDelegations() error {
 		u = url.URL{
 			Scheme: "https",
 			Host:   CosmosAPI,
-			Path:   fmt.Sprintf(StakePath, EverstakeCosmosAddr, users[i].WalletAddress),
+			Path:   fmt.Sprintf(StakePath, os.Getenv("NODE_TOKEN"), EverstakeCosmosAddr, users[i].WalletAddress),
 		}
 
 		resp, err = http.Get(u.String())
