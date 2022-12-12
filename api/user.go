@@ -30,9 +30,17 @@ func (api *API) Me(c *gin.Context) {
 		return
 	}
 
+	link, err := api.services.GetLinkByUserID(&user)
+	if err != nil {
+		log.Error("[api] Me: GetLinkByUserID", zap.Error(err))
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 		"box":  box,
+		"link": link,
 	})
 }
 

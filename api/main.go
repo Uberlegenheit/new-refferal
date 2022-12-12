@@ -180,7 +180,6 @@ func (api *API) initialize() {
 		authGroup.GET("/all_rewards", api.GetAllRewards)
 		authGroup.GET("/invitations_stats", api.GetInvitationsStats)
 
-		authGroup.GET("/my_link", api.GetMyLink)
 		authGroup.GET("/my_rewards", api.GetMyRewards)
 		authGroup.GET("/invited", api.GetInvitedFriends)
 
