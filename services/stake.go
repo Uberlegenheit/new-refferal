@@ -3,15 +3,17 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"net/http"
 	"net/url"
 	"new-refferal/models"
 	"os"
 	"strconv"
+	"time"
 )
 
-func checkHashAndSum(stake *models.Stake) (bool, error) {
+func checkHashAndSum(stake *models.Stake, addr string) (bool, error) {
 	u := url.URL{
 		Scheme: "https",
 		Host:   CosmosAPI,
@@ -33,7 +35,15 @@ func checkHashAndSum(stake *models.Stake) (bool, error) {
 		return false, err
 	}
 
+	if time.Now().Unix()-tx.TxFetchTime.Timestamp.Unix() > 1200000 {
+		return false, fmt.Errorf("old transaction")
+	}
+
 	if len(tx.Tx.Body.Body) != 0 {
+		if tx.Tx.Body.Body[0].DelegatorAddr != addr {
+			return false, fmt.Errorf("wrong delegator address")
+		}
+
 		stakeStr, err := strconv.ParseInt(tx.Tx.Body.Body[0].Amount.Amount, 10, 64)
 		if err != nil {
 			return false, err
@@ -52,8 +62,8 @@ func checkHashAndSum(stake *models.Stake) (bool, error) {
 	return true, nil
 }
 
-func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake) (*models.Stake, error) {
-	ok, err := checkHashAndSum(stake)
+func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake, user *models.User) (*models.Stake, error) {
+	ok, err := checkHashAndSum(stake, user.WalletAddress)
 	if err != nil {
 		return nil, fmt.Errorf("checkHashAndSum: %s", err.Error())
 	}
@@ -106,4 +116,34 @@ func (s *ServiceFacade) GetInvitedUsersStakes(user *models.User) ([]models.Stake
 	}
 
 	return stakes, nil
+}
+
+func (s *ServiceFacade) GetDelegationKey(user *models.User) (string, error) {
+	key := uuid.New()
+
+	err := s.dao.CacheSave(user.WalletAddress, key.String(), time.Minute*2)
+	if err != nil {
+		return "", fmt.Errorf("dao.CacheSave: %s", err.Error())
+	}
+
+	return key.String(), nil
+}
+
+func (s *ServiceFacade) CheckDelegationKey(user *models.User, key string) (bool, error) {
+	defer s.dao.CacheRemove(user.WalletAddress)
+
+	sKey, ok, err := s.dao.CacheGet(user.WalletAddress)
+	if err != nil {
+		return false, fmt.Errorf("dao.CacheGet: %s", err.Error())
+	}
+
+	if !ok {
+		return false, fmt.Errorf("no key generated")
+	}
+
+	if key != sKey.(string) {
+		return false, fmt.Errorf("key is invalid")
+	}
+
+	return true, nil
 }

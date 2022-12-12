@@ -19,9 +19,11 @@ type (
 
 		GetLinkByUserID(user *models.User) (*models.Link, error)
 
-		SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
+		SaveDelegationTx(stake *models.Stake, user *models.User) (*models.Stake, error)
 		GetDelegationByTxHash(stake *models.Stake) (*models.Stake, error)
 		GetInvitedUsersStakes(user *models.User) ([]models.StakeShow, error)
+		GetDelegationKey(user *models.User) (string, error)
+		CheckDelegationKey(user *models.User, key string) (bool, error)
 
 		OpenBox(user *models.User) error
 		GetAvailableBoxesByUserID(userID uint64) (*models.Box, error)

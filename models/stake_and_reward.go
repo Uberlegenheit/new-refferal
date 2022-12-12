@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type StakeAndReward struct {
 	Rewards []apiRewards `json:"rewards"`
 	Stake   apiStake     `json:"delegation_response"`
@@ -27,7 +29,12 @@ type apiBalance struct {
 }
 
 type TxFetch struct {
-	Tx Tx `json:"tx"`
+	Tx          Tx          `json:"tx"`
+	TxFetchTime TxFetchTime `json:"tx_response"`
+}
+
+type TxFetchTime struct {
+	Timestamp time.Time `json:"timestamp"`
 }
 
 type Tx struct {
@@ -35,7 +42,8 @@ type Tx struct {
 }
 
 type msg struct {
-	Amount apiBalance `json:"amount"`
+	DelegatorAddr string     `json:"delegator_address"`
+	Amount        apiBalance `json:"amount"`
 }
 
 type TxBody struct {

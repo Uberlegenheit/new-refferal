@@ -58,6 +58,10 @@ type (
 		AddAuthToken(key string, item interface{}, expiration time.Duration) error
 		GetAuthToken(token string) (interface{}, bool, error)
 		RemoveAuthToken(key string) error
+
+		CacheSave(key string, item interface{}, expiration time.Duration) error
+		CacheGet(token string) (interface{}, bool, error)
+		CacheRemove(key string) error
 	}
 	daoImpl struct {
 		*postgres.Postgres

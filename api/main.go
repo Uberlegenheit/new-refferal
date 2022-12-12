@@ -174,6 +174,7 @@ func (api *API) initialize() {
 		authGroup.GET("/me", api.Me)
 
 		authGroup.POST("/delegate", api.Delegate)
+		authGroup.GET("/key", api.GetDelegationKey)
 
 		authGroup.GET("/rewards_total_stats", api.GetTotalRewardStats)
 		authGroup.GET("/all_rewards", api.GetAllRewards)
