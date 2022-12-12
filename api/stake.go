@@ -69,12 +69,14 @@ func (api *API) GetDelegationKey(c *gin.Context) {
 	}
 	user := val.(models.User)
 
-	stk, err := api.services.GetDelegationKey(&user)
+	key, err := api.services.GetDelegationKey(&user)
 	if err != nil {
 		log.Error("[api] GetDelegationKey: GetDelegationKey", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, stk)
+	c.JSON(http.StatusOK, gin.H{
+		"key": key,
+	})
 }
