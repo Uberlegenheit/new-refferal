@@ -21,6 +21,7 @@ type Reward struct {
 type RewardShow struct {
 	ID         uint64    `gorm:"column:id;PRIMARY_KEY" json:"id"`
 	WalletName string    `gorm:"column:wallet_name"    json:"wallet_name"`
+	WalletAddr string    `gorm:"column:wallet_address" json:"wallet_address"`
 	Status     string    `gorm:"column:status"         json:"status"`
 	Type       string    `gorm:"column:type"           json:"type"`
 	Amount     float64   `gorm:"column:amount"         json:"amount"`
