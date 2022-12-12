@@ -103,6 +103,7 @@ func (db *Postgres) GetUsersInvitationsStats() ([]models.InvitationsStats, error
 	if err := db.db.Model(&models.InvitationsStats{}).
 		Select(`u.id as user_id,
 					  u.wallet_name,
+					  u.wallet_address,
 					  coalesce(sum(r.amount), 0) as total_reward,
 					  count(distinct i.referral_id) as friends_invited`).
 		Table(fmt.Sprintf("%s u", models.UsersTable)).

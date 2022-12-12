@@ -37,6 +37,7 @@ type TotalReward struct {
 type InvitationsStats struct {
 	UserID        uint64  `gorm:"column:user_id"        json:"user_id"`
 	WalletName    string  `gorm:"column:wallet_name"    json:"wallet_name"`
+	WalletAddr    string  `gorm:"column:wallet_address" json:"wallet_address"`
 	TotalReward   float64 `gorm:"column:total_reward"   json:"total_reward"`
 	FriendInvited uint64  `gorm:"column:friend_invited" json:"friend_invited"`
 }
