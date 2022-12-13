@@ -94,8 +94,8 @@ func (db *Postgres) GetStakeAndBoxUserStatByID(id uint64) (*models.StakeAndBoxSt
 	if err := db.db.Model(&models.StakeAndBoxStat{}).
 		Select("s.user_id, coalesce(round(CAST(sum(s.amount) as numeric), 8), 0) as total_stake, b.total_boxes").
 		Table(fmt.Sprintf("%s s", models.StakesTable)).
-		Joins("inner join (select b.user_id, sum(b.available+b.opened) as total_boxes from boxes b group by b.user_id) b on b.user_id = s.user_id").
-		Where("s.user_id = ? AND s.status = ?", id, true).
+		Joins("join (select b.user_id, sum(b.available+b.opened) as total_boxes from boxes b group by b.user_id) b on b.user_id = s.user_id").
+		Where("s.user_id = ? AND s.status = true", id).
 		Group("s.user_id, b.total_boxes").
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
