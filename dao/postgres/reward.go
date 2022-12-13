@@ -136,8 +136,9 @@ func (db *Postgres) CreateAndUpdateRewardsState(pool *models.RewardsPool, user *
 			Table(models.RewardsPoolTable).
 			Where("id = ?", pool.ID).
 			Updates(map[string]interface{}{
-				"available": pool.Available,
-				"sent":      pool.Sent,
+				"available":   pool.Available,
+				"sent":        pool.Sent,
+				"daily_limit": pool.DailyLimit,
 			}).Error; err != nil {
 			return err
 		}
@@ -145,8 +146,14 @@ func (db *Postgres) CreateAndUpdateRewardsState(pool *models.RewardsPool, user *
 		if err := tx.Model(&models.Box{}).
 			Table(models.BoxesTable).
 			Where("user_id = ?", user.ID).
-			Update("available", gorm.Expr("available-?", 1)).
-			Update("opened", gorm.Expr("opened+?", 1)).Error; err != nil {
+			Update("available", gorm.Expr("available - ?", 1)).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&models.Box{}).
+			Table(models.BoxesTable).
+			Where("user_id = ?", user.ID).
+			Update("opened", gorm.Expr("opened + ?", 1)).Error; err != nil {
 			return err
 		}
 

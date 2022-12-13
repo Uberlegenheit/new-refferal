@@ -36,3 +36,17 @@ func (db *Postgres) UpdateRewardsPool(pool *models.RewardsPool) error {
 
 	return nil
 }
+
+func (db *Postgres) SetDailyPoolLimit(pool *models.RewardsPool) error {
+	result := db.db.Table(models.RewardsPoolTable).
+		Model(&models.RewardsPool{}).
+		Where("id = ?", pool.ID).
+		Updates(map[string]interface{}{
+			"daily_limit": pool.DailyLimit,
+		})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

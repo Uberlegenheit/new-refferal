@@ -56,6 +56,7 @@ type (
 
 		GetRewardsPool() (*models.RewardsPool, error)
 		UpdateRewardsPool(pool *models.RewardsPool) error
+		SetDailyPoolLimit(pool *models.RewardsPool) error
 
 		CreateAndUpdateRewardsState(pool *models.RewardsPool, user *models.User, amount float64) error
 	}

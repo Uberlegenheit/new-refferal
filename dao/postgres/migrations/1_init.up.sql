@@ -51,9 +51,10 @@ create table if not exists stakes
 
 create table if not exists rewards_pool
 (
-    id        serial not null constraint rewards_pool_pk primary key,
-    available float8 default 0 not null,
-    sent      float8 default 0 not null
+    id          serial not null constraint rewards_pool_pk primary key,
+    available   float8 default 0 not null,
+    sent        float8 default 0 not null,
+    daily_limit float8 default 0 not null
 );
 
 create table if not exists rewards_history

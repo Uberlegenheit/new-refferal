@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"github.com/google/martian/log"
 	"github.com/roylee0704/gron"
+	"github.com/roylee0704/gron/xtime"
 	"github.com/shopspring/decimal"
 	"net/http"
 	"net/url"
 	"new-refferal/models"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -32,6 +34,16 @@ func (s *ServiceFacade) InitCron(cron *gron.Cron) {
 			return
 		}
 	})
+
+	cron.AddFunc(gron.Every(1*xtime.Day).At("00:00"), func() {
+		err := s.checkDailyPoolLimit()
+		if err != nil {
+			log.Errorf("setting daily pool limit: %s", err.Error())
+			return
+		}
+	})
+
+	_ = s.checkDailyPoolLimit()
 }
 
 func (s *ServiceFacade) parseDelegations() error {
@@ -131,6 +143,31 @@ func (s *ServiceFacade) parseDelegations() error {
 		//	return fmt.Errorf("dao.UpdateReward: %s", err.Error())
 		//}
 	}
+
+	return nil
+}
+
+func (s *ServiceFacade) checkDailyPoolLimit() error {
+	pool, err := s.dao.GetRewardsPool()
+	if err != nil {
+		return fmt.Errorf("dao.GetRewardsPool: %s", err.Error())
+	}
+
+	date := strings.Split(time.Now().Format("2006-01-02"), "-")
+	year, _ := strconv.Atoi(date[0])
+	month, _ := strconv.Atoi(date[1])
+	day, _ := strconv.Atoi(date[2])
+	days := time.Date(year, time.Month(month), 0, 0, 0, 0, 0, time.UTC).Day()
+
+	if day == days {
+		days = 1
+	} else {
+		days = days - day
+	}
+
+	pool.DailyLimit = (pool.Available / float64(days)) * 0.9
+
+	err = s.dao.SetDailyPoolLimit(pool)
 
 	return nil
 }
