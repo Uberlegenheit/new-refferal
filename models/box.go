@@ -1,5 +1,7 @@
 package models
 
+const BoxesTable = "boxes"
+
 type Box struct {
 	ID        uint64 `gorm:"column:id;PRIMARY_KEY"      json:"id"`
 	UserID    uint64 `gorm:"column:user_id"             json:"user_id"`

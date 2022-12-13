@@ -143,6 +143,7 @@ func (db *Postgres) CreateAndUpdateRewardsState(pool *models.RewardsPool, user *
 		}
 
 		if err := tx.Model(&models.Box{}).
+			Table(models.BoxesTable).
 			Where("user_id = ?", user.ID).
 			Update("available", gorm.Expr("available-?", 1)).
 			Update("opened", gorm.Expr("opened+?", 1)).Error; err != nil {

@@ -99,4 +99,3 @@ ALTER TABLE users ADD CONSTRAINT user_wallet_address UNIQUE (wallet_address);
 ALTER TABLE links ADD CONSTRAINT links_code UNIQUE (code);
 ALTER TABLE stakes ADD CONSTRAINT stakes_tx_hash UNIQUE (tx_hash);
 ALTER TABLE reward_types ADD CONSTRAINT reward_types_name UNIQUE ("name");
-ALTER TABLE rewards ADD CONSTRAINT rewards_tx_hash UNIQUE (tx_hash);
