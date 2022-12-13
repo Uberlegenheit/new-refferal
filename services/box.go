@@ -14,14 +14,14 @@ const (
 	usersToParticipate = 10.0
 )
 
-func (s *ServiceFacade) OpenBox(user *models.User) error {
+func (s *ServiceFacade) OpenBox(user *models.User) (float64, error) {
 	info, err := s.dao.GetAvailableBoxesByUserID(user.ID)
 	if err != nil {
-		return fmt.Errorf("dao.GetAvailableBoxesByUserID: %s", err.Error())
+		return 0, fmt.Errorf("dao.GetAvailableBoxesByUserID: %s", err.Error())
 	}
 
 	if info.Available <= 0 {
-		return fmt.Errorf("you don't have boxes to open")
+		return 0, fmt.Errorf("you don't have boxes to open")
 	}
 	date := strings.Split(time.Now().Format("2006-01-02"), "-")
 	year, _ := strconv.Atoi(date[0])
@@ -37,7 +37,7 @@ func (s *ServiceFacade) OpenBox(user *models.User) error {
 
 	pool, err := s.dao.GetRewardsPool()
 	if err != nil {
-		return fmt.Errorf("dao.GetRewardsPool: %s", err.Error())
+		return 0, fmt.Errorf("dao.GetRewardsPool: %s", err.Error())
 	}
 
 	x1, x2 := 1.0, usersToParticipate
@@ -58,10 +58,10 @@ func (s *ServiceFacade) OpenBox(user *models.User) error {
 
 	err = s.dao.CreateAndUpdateRewardsState(pool, user, winAmount)
 	if err != nil {
-		return fmt.Errorf("dao.CreateAndUpdateRewardsState: %s", err.Error())
+		return 0, fmt.Errorf("dao.CreateAndUpdateRewardsState: %s", err.Error())
 	}
 
-	return nil
+	return winAmount, nil
 }
 
 func (s *ServiceFacade) GetAvailableBoxesByUserID(userID uint64) (*models.Box, error) {

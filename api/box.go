@@ -18,12 +18,12 @@ func (api *API) OpenBox(c *gin.Context) {
 	}
 	user := val.(models.User)
 
-	err := api.services.OpenBox(&user)
+	reward, err := api.services.OpenBox(&user)
 	if err != nil {
 		log.Error("[api] OpenBox: OpenBox", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true})
+	c.JSON(http.StatusOK, gin.H{"reward": reward})
 }

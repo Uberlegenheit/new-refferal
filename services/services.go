@@ -29,7 +29,7 @@ type (
 		UpdatePayout(payout *models.Payout) error
 		GetPayouts(pagination filters.Pagination) ([]models.PayoutShow, error)
 
-		OpenBox(user *models.User) error
+		OpenBox(user *models.User) (float64, error)
 		GetAvailableBoxesByUserID(userID uint64) (*models.Box, error)
 
 		UpdateReward(reward *models.Reward) error
