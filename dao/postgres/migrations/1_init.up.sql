@@ -85,6 +85,16 @@ create table if not exists rewards
     created   timestamp default now() not null
 );
 
+create table if not exists payouts
+(
+    id        serial not null constraint payouts_pk primary key,
+    user_id   int4 references users(id)  on update cascade on delete restrict not null,
+    amount    float8       not null,
+    fee       float8       not null,
+    tx_hash   varchar(150) default '',
+    created   timestamp default now() not null
+);
+
 ALTER TABLE users ADD CONSTRAINT user_wallet_address UNIQUE (wallet_address);
 ALTER TABLE links ADD CONSTRAINT links_code UNIQUE (code);
 ALTER TABLE stakes ADD CONSTRAINT stakes_tx_hash UNIQUE (tx_hash);

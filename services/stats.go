@@ -29,7 +29,7 @@ func (s *ServiceFacade) GetMyStakeSum(id uint64) (*models.StakeAndProgress, erro
 	return stake, nil
 }
 
-func (s *ServiceFacade) GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStats, error) {
+func (s *ServiceFacade) GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) (*models.TotalStats, error) {
 	stats, err := s.dao.GetTotalStats(req, pagination)
 	if err != nil {
 		return nil, fmt.Errorf("dao.GetTotalStats: %s", err.Error())
@@ -47,19 +47,19 @@ func (s *ServiceFacade) GetTotalStakeStats(req filters.PeriodInfoRequest, pagina
 	return stats, nil
 }
 
-func (s *ServiceFacade) GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, error) {
-	stats, err := s.dao.GetFriendsStakeStats(req, pagination)
+func (s *ServiceFacade) GetBoxesStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.BoxStats, error) {
+	stats, err := s.dao.GetBoxesStats(req, pagination)
 	if err != nil {
-		return nil, fmt.Errorf("dao.GetFriendsStakeStats: %s", err.Error())
+		return nil, fmt.Errorf("dao.GetBoxesStats: %s", err.Error())
 	}
 
 	return stats, nil
 }
 
-func (s *ServiceFacade) GetRewardPaymentStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.RewardPaymentsStats, error) {
-	stats, err := s.dao.GetRewardPaymentStats(req, pagination)
+func (s *ServiceFacade) GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, error) {
+	stats, err := s.dao.GetFriendsStakeStats(req, pagination)
 	if err != nil {
-		return nil, fmt.Errorf("dao.GetRewardPaymentStats: %s", err.Error())
+		return nil, fmt.Errorf("dao.GetFriendsStakeStats: %s", err.Error())
 	}
 
 	return stats, nil

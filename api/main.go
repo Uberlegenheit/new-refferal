@@ -190,11 +190,15 @@ func (api *API) initialize() {
 	adminGroup := authGroup.Group("/admin")
 	adminGroup.Use(api.AdminMiddleware())
 	{
-		adminGroup.GET("/rewards_total_stats", api.GetTotalRewardStats)
 		adminGroup.GET("/total_stats", api.GetTotalStats)
 		adminGroup.GET("/total_stake_stats", api.GetTotalStakeStats)
 		adminGroup.GET("/friends_stake_stats", api.GetFriendsStakeStats)
-		adminGroup.GET("/reward_payment_stats", api.GetRewardPaymentStats)
+		adminGroup.GET("/boxes_stats", api.GetBoxesStats)
+		adminGroup.GET("/rewards_total_stats", api.GetTotalRewardStats)
+
+		adminGroup.GET("/payouts", api.GetPayouts)
+		adminGroup.POST("/payout", api.CreatePayout)
+		adminGroup.PUT("/payout", api.UpdatePayout)
 	}
 
 	api.server = &http.Server{Addr: fmt.Sprintf(":%d", api.cfg.API.ListenOnPort), Handler: api.router}

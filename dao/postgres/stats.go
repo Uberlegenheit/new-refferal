@@ -8,9 +8,9 @@ import (
 	"new-refferal/models"
 )
 
-func (db *Postgres) GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStats, error) {
+func (db *Postgres) GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) (*models.TotalStats, error) {
 	pagination.Validate()
-	stats := make([]models.TotalStats, 0)
+	stats := new(models.TotalStats)
 
 	if err := db.db.Limit(int(pagination.Limit)).
 		Offset(int(pagination.Offset())).
@@ -80,6 +80,7 @@ func (db *Postgres) GetTotalStakeStats(req filters.PeriodInfoRequest, pagination
 		Model(&models.TotalStakeStats{}).
 		Select(`select u.id as user_id,
 							   u.wallet_name,
+							   u.wallet_address,
 							   st.id as type_id,
 							   st.name as type,
 							   s.amount,
@@ -101,6 +102,33 @@ func (db *Postgres) GetTotalStakeStats(req filters.PeriodInfoRequest, pagination
 	return stats, nil
 }
 
+func (db *Postgres) GetBoxesStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.BoxStats, error) {
+	pagination.Validate()
+	stats := make([]models.BoxStats, 0)
+
+	if err := db.db.Limit(int(pagination.Limit)).
+		Offset(int(pagination.Offset())).
+		Model(&models.TotalStakeStats{}).
+		Select(`select u.id as user_id,
+							   u.wallet_name,
+							   u.wallet_address,
+							   r.amount,
+							   r.status,
+							   r.created,
+							   r.tx_hash
+						from users u
+						inner join rewards r on u.id = r.user_id`).
+		Where("r.type_id = 2 AND (r.created >= ? AND r.created <= ?)", req.Start, req.End).
+		Scan(&stats).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return stats, nil
+}
+
 func (db *Postgres) GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, error) {
 	pagination.Validate()
 	stats := make([]models.FriendStakeStats, 0)
@@ -111,6 +139,7 @@ func (db *Postgres) GetFriendsStakeStats(req filters.PeriodInfoRequest, paginati
 		Select(`select i.referrer_id,
 							   i.referral_id,
 							   u.wallet_name,
+							   u.wallet_address,
 							   st.id as type_id,
 							   st.name as type,
 							   s.amount,
@@ -123,34 +152,6 @@ func (db *Postgres) GetFriendsStakeStats(req filters.PeriodInfoRequest, paginati
 						inner join stake_types st on s.type_id = st.id
 						inner join boxes b on u.id = b.user_id`).
 		Where("s.status = true AND (s.created >= ? AND s.created <= ?)", req.Start, req.End).
-		Scan(&stats).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return stats, nil
-}
-
-func (db *Postgres) GetRewardPaymentStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.RewardPaymentsStats, error) {
-	pagination.Validate()
-	stats := make([]models.RewardPaymentsStats, 0)
-
-	if err := db.db.Limit(int(pagination.Limit)).
-		Offset(int(pagination.Offset())).
-		Model(&models.RewardPaymentsStats{}).
-		Select(`select r.id,
-							   r.user_id,
-							   u.wallet_name,
-							   r.status,
-							   r.amount,
-							   r.tx_hash,
-							   r.created
-						from rewards r
-						inner join reward_types rt on rt.id = r.type_id
-						inner join users u on r.user_id = u.id`).
-		Where("r.type_id = 2 AND (r.created >= ? AND r.created <= ?)", req.Start, req.End).
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil

@@ -25,6 +25,10 @@ type (
 		GetDelegationKey(user *models.User) (string, error)
 		CheckDelegationKey(user *models.User, key string) (bool, error)
 
+		CreatePayout(payout *models.Payout) (*models.Payout, error)
+		UpdatePayout(payout *models.Payout) error
+		GetPayouts(pagination filters.Pagination) ([]models.PayoutShow, error)
+
 		OpenBox(user *models.User) error
 		GetAvailableBoxesByUserID(userID uint64) (*models.Box, error)
 
@@ -33,10 +37,11 @@ type (
 		GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, error)
 		GetTotalRewardStats() (*models.TotalReward, error)
 		GetMyStakeSum(id uint64) (*models.StakeAndProgress, error)
-		GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStats, error)
+
+		GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) (*models.TotalStats, error)
+		GetBoxesStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.BoxStats, error)
 		GetTotalStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStakeStats, error)
 		GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, error)
-		GetRewardPaymentStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.RewardPaymentsStats, error)
 		GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, error)
 
 		CreateToken(walletAddr string) (*models.TokenDetails, error)

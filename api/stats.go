@@ -94,24 +94,24 @@ func (api *API) GetFriendsStakeStats(c *gin.Context) {
 	c.JSON(http.StatusOK, stats)
 }
 
-func (api *API) GetRewardPaymentStats(c *gin.Context) {
+func (api *API) GetBoxesStats(c *gin.Context) {
 	var req filters.PeriodInfoRequest
 	if err := c.Bind(&req); err != nil {
-		log.Error("[api] GetRewardPaymentStats: Bind", zap.Error(err))
+		log.Error("[api] GetBoxesStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var pagination filters.Pagination
 	if err := c.Bind(&pagination); err != nil {
-		log.Error("[api] GetRewardPaymentStats: Bind", zap.Error(err))
+		log.Error("[api] GetBoxesStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	stats, err := api.services.GetRewardPaymentStats(req, pagination)
+	stats, err := api.services.GetBoxesStats(req, pagination)
 	if err != nil {
-		log.Error("[api] GetRewardPaymentStats: GetRewardPaymentStats", zap.Error(err))
+		log.Error("[api] GetBoxesStats: GetBoxesStats", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

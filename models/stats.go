@@ -13,36 +13,49 @@ type TotalStats struct {
 }
 
 type RewardPaymentsStats struct {
-	ReferrerID uint64    `gorm:"column:user_id"     json:"referrer_id"`
-	ReferralID uint64    `gorm:"column:user_id"     json:"referral_id"`
-	WalletName string    `gorm:"column:wallet_name" json:"wallet_name"`
-	TypeID     uint64    `gorm:"column:type_id"     json:"type_id"`
-	Type       string    `gorm:"column:type"        json:"type"`
-	Amount     float64   `gorm:"column:amount"      json:"amount"`
-	Boxes      uint64    `gorm:"column:boxes"       json:"boxes"`
-	Created    time.Time `gorm:"column:created"     json:"created"`
-	TxHash     float64   `gorm:"column:tx_hash"     json:"tx_hash"`
+	ReferrerID uint64    `gorm:"column:referrer_id"    json:"referrer_id"`
+	ReferralID uint64    `gorm:"column:referral_id"    json:"referral_id"`
+	WalletName string    `gorm:"column:wallet_name"    json:"wallet_name"`
+	WalletAddr string    `gorm:"column:wallet_address" json:"wallet_address"`
+	TypeID     uint64    `gorm:"column:type_id"        json:"type_id"`
+	Type       string    `gorm:"column:type"           json:"type"`
+	Amount     float64   `gorm:"column:amount"         json:"amount"`
+	Boxes      uint64    `gorm:"column:boxes"          json:"boxes"`
+	Created    time.Time `gorm:"column:created"        json:"created"`
+	TxHash     float64   `gorm:"column:tx_hash"        json:"tx_hash"`
 }
 
 type TotalStakeStats struct {
-	UserID     uint64    `gorm:"column:user_id"     json:"user_id"`
-	WalletName string    `gorm:"column:wallet_name" json:"wallet_name"`
-	TypeID     uint64    `gorm:"column:type_id"     json:"type_id"`
-	Type       string    `gorm:"column:type"        json:"type"`
-	Amount     float64   `gorm:"column:amount"      json:"amount"`
-	Boxes      uint64    `gorm:"column:boxes"       json:"boxes"`
-	Created    time.Time `gorm:"column:created"     json:"created"`
-	TxHash     float64   `gorm:"column:tx_hash"     json:"tx_hash"`
+	UserID     uint64    `gorm:"column:user_id"        json:"user_id"`
+	WalletName string    `gorm:"column:wallet_name"    json:"wallet_name"`
+	WalletAddr string    `gorm:"column:wallet_address" json:"wallet_address"`
+	TypeID     uint64    `gorm:"column:type_id"        json:"type_id"`
+	Type       string    `gorm:"column:type"           json:"type"`
+	Amount     float64   `gorm:"column:amount"         json:"amount"`
+	Boxes      uint64    `gorm:"column:boxes"          json:"boxes"`
+	Created    time.Time `gorm:"column:created"        json:"created"`
+	TxHash     float64   `gorm:"column:tx_hash"        json:"tx_hash"`
 }
 
 type FriendStakeStats struct {
-	ReferrerID uint64    `gorm:"column:user_id"     json:"referrer_id"`
-	ReferralID uint64    `gorm:"column:user_id"     json:"referral_id"`
-	WalletName string    `gorm:"column:wallet_name" json:"wallet_name"`
-	TypeID     uint64    `gorm:"column:type_id"     json:"type_id"`
-	Type       string    `gorm:"column:type"        json:"type"`
-	Amount     float64   `gorm:"column:amount"      json:"amount"`
-	Boxes      uint64    `gorm:"column:boxes"       json:"boxes"`
-	Created    time.Time `gorm:"column:created"     json:"created"`
-	TxHash     float64   `gorm:"column:tx_hash"     json:"tx_hash"`
+	ReferrerID uint64    `gorm:"column:referrer_id"    json:"referrer_id"`
+	ReferralID uint64    `gorm:"column:referral_id"    json:"referral_id"`
+	WalletName string    `gorm:"column:wallet_name"    json:"wallet_name"`
+	WalletAddr string    `gorm:"column:wallet_address" json:"wallet_address"`
+	TypeID     uint64    `gorm:"column:type_id"        json:"type_id"`
+	Type       string    `gorm:"column:type"           json:"type"`
+	Amount     float64   `gorm:"column:amount"         json:"amount"`
+	Boxes      uint64    `gorm:"column:boxes"          json:"boxes"`
+	Created    time.Time `gorm:"column:created"        json:"created"`
+	TxHash     float64   `gorm:"column:tx_hash"        json:"tx_hash"`
+}
+
+type BoxStats struct {
+	UserID     uint64    `gorm:"column:user_id"        json:"user_id"`
+	WalletName string    `gorm:"column:wallet_name"    json:"wallet_name"`
+	WalletAddr string    `gorm:"column:wallet_address" json:"wallet_address"`
+	Amount     float64   `gorm:"column:amount"         json:"reward"`
+	Status     string    `gorm:"column:status"         json:"status"`
+	Created    time.Time `gorm:"column:created"        json:"opened"`
+	TxHash     float64   `gorm:"column:tx_hash"        json:"tx_hash"`
 }
