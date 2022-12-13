@@ -7,6 +7,7 @@ import (
 	"github.com/shopspring/decimal"
 	"net/http"
 	"net/url"
+	"new-refferal/filters"
 	"new-refferal/models"
 	"os"
 	"strconv"
@@ -111,8 +112,8 @@ func (s *ServiceFacade) GetDelegationByTxHash(stake *models.Stake) (*models.Stak
 	return nil, nil
 }
 
-func (s *ServiceFacade) GetInvitedUsersStakes(user *models.User) ([]models.StakeShow, error) {
-	stakes, err := s.dao.GetInvitedUsersStakes(user.ID)
+func (s *ServiceFacade) GetInvitedUsersStakes(user *models.User, pagination filters.Pagination) ([]models.StakeShow, error) {
+	stakes, err := s.dao.GetInvitedUsersStakes(user.ID, pagination)
 	if err != nil {
 		return nil, fmt.Errorf("dao.GetInvitedUsersStakes: %s", err.Error())
 	}

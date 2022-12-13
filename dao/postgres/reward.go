@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"new-refferal/filters"
 	"new-refferal/models"
 	"time"
 )
@@ -40,10 +41,13 @@ func (db *Postgres) UpdateReward(reward *models.Reward) error {
 	return nil
 }
 
-func (db *Postgres) GetUserRewardsByID(id uint64) ([]models.RewardShow, error) {
+func (db *Postgres) GetUserRewardsByID(id uint64, pagination filters.Pagination) ([]models.RewardShow, error) {
+	pagination.Validate()
 	rewards := make([]models.RewardShow, 0)
 
-	if err := db.db.Model(&models.RewardShow{}).
+	if err := db.db.Limit(int(pagination.Limit)).
+		Offset(int(pagination.Offset())).
+		Model(&models.RewardShow{}).
 		Select(`r.id, u.wallet_name, u.wallet_address, r.status, rt."name" as type, r.amount, r.tx_hash, r.created`).
 		Table(fmt.Sprintf("%s r", models.RewardsTable)).
 		Joins("inner join reward_types rt on rt.id = r.type_id").
@@ -60,10 +64,13 @@ func (db *Postgres) GetUserRewardsByID(id uint64) ([]models.RewardShow, error) {
 	return rewards, nil
 }
 
-func (db *Postgres) GetAllRewards() ([]models.RewardShow, error) {
+func (db *Postgres) GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, error) {
+	pagination.Validate()
 	rewards := make([]models.RewardShow, 0)
 
-	if err := db.db.Model(&models.RewardShow{}).
+	if err := db.db.Limit(int(pagination.Limit)).
+		Offset(int(pagination.Offset())).
+		Model(&models.RewardShow{}).
 		Select(`r.id, u.wallet_name, u.wallet_address, r.status, rt."name" as type, r.amount, r.tx_hash, r.created`).
 		Table(fmt.Sprintf("%s r", models.RewardsTable)).
 		Joins("inner join reward_types rt on rt.id = r.type_id").
@@ -97,10 +104,13 @@ func (db *Postgres) GetTotalRewardStats() (*models.TotalReward, error) {
 	return rewards, nil
 }
 
-func (db *Postgres) GetUsersInvitationsStats() ([]models.InvitationsStats, error) {
+func (db *Postgres) GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, error) {
+	pagination.Validate()
 	stats := make([]models.InvitationsStats, 0)
 
-	if err := db.db.Model(&models.InvitationsStats{}).
+	if err := db.db.Limit(int(pagination.Limit)).
+		Offset(int(pagination.Offset())).
+		Model(&models.InvitationsStats{}).
 		Select(`u.id as user_id,
 					  u.wallet_name,
 					  u.wallet_address,

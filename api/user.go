@@ -19,28 +19,28 @@ func (api *API) Me(c *gin.Context) {
 	user, ok := val.(models.User)
 	if !ok {
 		log.Error("[api] Me: cast", zap.Error(fmt.Errorf("cannot cast active user")))
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "cannot cast active user"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "cannot cast active user"})
 		return
 	}
 
 	box, err := api.services.GetAvailableBoxesByUserID(user.ID)
 	if err != nil {
 		log.Error("[api] Me: GetAvailableBoxesByUserID", zap.Error(err))
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	link, err := api.services.GetLinkByUserID(&user)
 	if err != nil {
 		log.Error("[api] Me: GetLinkByUserID", zap.Error(err))
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	stake, err := api.services.GetMyStakeSum(user.ID)
 	if err != nil {
 		log.Error("[api] Me: GetMyStakeSum", zap.Error(err))
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -63,21 +63,21 @@ func (api *API) SignIn(c *gin.Context) {
 	usr, err := api.services.LogInOrRegister(&user)
 	if err != nil {
 		log.Error("[api] SignIn: LogInOrRegister", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	td, err := api.services.CreateToken(usr.WalletAddress)
 	if err != nil {
 		log.Error("[api] SignIn: CreateToken", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	err = api.services.CreateAuth(usr.WalletAddress, td)
 	if err != nil {
 		log.Error("[api] SignIn: CreateAuth", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -94,7 +94,7 @@ func (api *API) SignOut(c *gin.Context) {
 	au, err := api.services.ExtractTokenMetadata(c)
 	if err != nil {
 		log.Error("[api] SignOut: ExtractTokenMetadata", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -108,7 +108,7 @@ func (api *API) SignOut(c *gin.Context) {
 		fmt.Sprintf("%s_access", refreshUuid))
 	if delErr != nil {
 		log.Error("[api] SignOut: DeleteAuth", zap.Error(delErr))
-		c.JSON(http.StatusBadRequest, gin.H{"error": delErr.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": delErr.Error()})
 		return
 	}
 
@@ -121,7 +121,7 @@ func (api *API) Refresh(c *gin.Context) {
 	td, err := api.services.Refresh(c.Request)
 	if err != nil {
 		log.Error("[api] Refresh: Refresh", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

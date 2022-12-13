@@ -21,7 +21,7 @@ func (api *API) OpenBox(c *gin.Context) {
 	err := api.services.OpenBox(&user)
 	if err != nil {
 		log.Error("[api] OpenBox: OpenBox", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

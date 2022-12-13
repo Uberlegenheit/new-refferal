@@ -21,7 +21,7 @@ func (api *API) Delegate(c *gin.Context) {
 	var stake models.Stake
 	if err := c.ShouldBindJSON(&stake); err != nil {
 		log.Error("[api] Delegate: ShouldBindJSON", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	stake.UserID = user.ID
@@ -42,18 +42,18 @@ func (api *API) Delegate(c *gin.Context) {
 	dbStake, err := api.services.GetDelegationByTxHash(&stake)
 	if err != nil {
 		log.Error("[api] Delegate: GetDelegationByTxHash", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if dbStake != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "hash already registered"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "hash already registered"})
 		return
 	}
 
 	stk, err := api.services.SaveDelegationTx(&stake, &user)
 	if err != nil {
 		log.Error("[api] Delegate: SaveDelegationTx", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -72,7 +72,7 @@ func (api *API) GetDelegationKey(c *gin.Context) {
 	key, err := api.services.GetDelegationKey(&user)
 	if err != nil {
 		log.Error("[api] GetDelegationKey: GetDelegationKey", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

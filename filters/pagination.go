@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	MaxLimitSize = 1000
-	DefaultLimit = 100
+	MaxLimitSize = 500
+	DefaultLimit = 50
 )
 
 type (

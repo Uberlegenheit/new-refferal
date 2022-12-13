@@ -21,7 +21,7 @@ type (
 
 		SaveDelegationTx(stake *models.Stake, user *models.User) (*models.Stake, error)
 		GetDelegationByTxHash(stake *models.Stake) (*models.Stake, error)
-		GetInvitedUsersStakes(user *models.User) ([]models.StakeShow, error)
+		GetInvitedUsersStakes(user *models.User, pagination filters.Pagination) ([]models.StakeShow, error)
 		GetDelegationKey(user *models.User) (string, error)
 		CheckDelegationKey(user *models.User, key string) (bool, error)
 
@@ -29,15 +29,15 @@ type (
 		GetAvailableBoxesByUserID(userID uint64) (*models.Box, error)
 
 		UpdateReward(reward *models.Reward) error
-		GetUserRewardsByID(user *models.User) ([]models.RewardShow, error)
-		GetAllRewards() ([]models.RewardShow, error)
+		GetUserRewardsByID(user *models.User, pagination filters.Pagination) ([]models.RewardShow, error)
+		GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, error)
 		GetTotalRewardStats() (*models.TotalReward, error)
 		GetMyStakeSum(id uint64) (*models.StakeAndProgress, error)
-		GetTotalStats(req filters.PeriodInfoRequest) ([]models.TotalStats, error)
-		GetTotalStakeStats(req filters.PeriodInfoRequest) ([]models.TotalStakeStats, error)
-		GetFriendsStakeStats(req filters.PeriodInfoRequest) ([]models.FriendStakeStats, error)
-		GetRewardPaymentStats(req filters.PeriodInfoRequest) ([]models.RewardPaymentsStats, error)
-		GetUsersInvitationsStats() ([]models.InvitationsStats, error)
+		GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStats, error)
+		GetTotalStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStakeStats, error)
+		GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, error)
+		GetRewardPaymentStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.RewardPaymentsStats, error)
+		GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, error)
 
 		CreateToken(walletAddr string) (*models.TokenDetails, error)
 		CreateAuth(walletAddr string, td *models.TokenDetails) error

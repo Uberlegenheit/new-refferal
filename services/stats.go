@@ -29,8 +29,8 @@ func (s *ServiceFacade) GetMyStakeSum(id uint64) (*models.StakeAndProgress, erro
 	return stake, nil
 }
 
-func (s *ServiceFacade) GetTotalStats(req filters.PeriodInfoRequest) ([]models.TotalStats, error) {
-	stats, err := s.dao.GetTotalStats(req)
+func (s *ServiceFacade) GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStats, error) {
+	stats, err := s.dao.GetTotalStats(req, pagination)
 	if err != nil {
 		return nil, fmt.Errorf("dao.GetTotalStats: %s", err.Error())
 	}
@@ -38,8 +38,8 @@ func (s *ServiceFacade) GetTotalStats(req filters.PeriodInfoRequest) ([]models.T
 	return stats, nil
 }
 
-func (s *ServiceFacade) GetTotalStakeStats(req filters.PeriodInfoRequest) ([]models.TotalStakeStats, error) {
-	stats, err := s.dao.GetTotalStakeStats(req)
+func (s *ServiceFacade) GetTotalStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStakeStats, error) {
+	stats, err := s.dao.GetTotalStakeStats(req, pagination)
 	if err != nil {
 		return nil, fmt.Errorf("dao.GetTotalStakeStats: %s", err.Error())
 	}
@@ -47,8 +47,8 @@ func (s *ServiceFacade) GetTotalStakeStats(req filters.PeriodInfoRequest) ([]mod
 	return stats, nil
 }
 
-func (s *ServiceFacade) GetFriendsStakeStats(req filters.PeriodInfoRequest) ([]models.FriendStakeStats, error) {
-	stats, err := s.dao.GetFriendsStakeStats(req)
+func (s *ServiceFacade) GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, error) {
+	stats, err := s.dao.GetFriendsStakeStats(req, pagination)
 	if err != nil {
 		return nil, fmt.Errorf("dao.GetFriendsStakeStats: %s", err.Error())
 	}
@@ -56,8 +56,8 @@ func (s *ServiceFacade) GetFriendsStakeStats(req filters.PeriodInfoRequest) ([]m
 	return stats, nil
 }
 
-func (s *ServiceFacade) GetRewardPaymentStats(req filters.PeriodInfoRequest) ([]models.RewardPaymentsStats, error) {
-	stats, err := s.dao.GetRewardPaymentStats(req)
+func (s *ServiceFacade) GetRewardPaymentStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.RewardPaymentsStats, error) {
+	stats, err := s.dao.GetRewardPaymentStats(req, pagination)
 	if err != nil {
 		return nil, fmt.Errorf("dao.GetRewardPaymentStats: %s", err.Error())
 	}
@@ -65,8 +65,8 @@ func (s *ServiceFacade) GetRewardPaymentStats(req filters.PeriodInfoRequest) ([]
 	return stats, nil
 }
 
-func (s *ServiceFacade) GetUsersInvitationsStats() ([]models.InvitationsStats, error) {
-	stats, err := s.dao.GetUsersInvitationsStats()
+func (s *ServiceFacade) GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, error) {
+	stats, err := s.dao.GetUsersInvitationsStats(pagination)
 	if err != nil {
 		return nil, fmt.Errorf("dao.GetUsersInvitationsStats: %s", err.Error())
 	}

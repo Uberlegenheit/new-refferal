@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"new-refferal/filters"
 	"new-refferal/models"
 )
 
@@ -47,10 +48,13 @@ func (db *Postgres) SetUserDelegationsFalse(id uint64) error {
 	return nil
 }
 
-func (db *Postgres) GetInvitedUsersStakes(id uint64) ([]models.StakeShow, error) {
+func (db *Postgres) GetInvitedUsersStakes(id uint64, pagination filters.Pagination) ([]models.StakeShow, error) {
+	pagination.Validate()
 	stakes := make([]models.StakeShow, 0)
 
-	if err := db.db.Model(&models.StakeShow{}).
+	if err := db.db.Limit(int(pagination.Limit)).
+		Offset(int(pagination.Offset())).
+		Model(&models.StakeShow{}).
 		Select("s.id, s.user_id, s.amount, s.status, s.tx_hash, b.available+b.opened as boxes, s.created").
 		Table(fmt.Sprintf("%s it", models.InvitationsTable)).
 		Joins("inner join stakes s on it.referral_id = s.user_id").

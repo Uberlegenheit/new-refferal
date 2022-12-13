@@ -29,7 +29,7 @@ type (
 		SaveDelegationTxAndAddBoxes(stake *models.Stake) (*models.Stake, error)
 		GetDelegationByTxHash(stake *models.Stake) (*models.Stake, error)
 		SetUserDelegationsFalse(id uint64) error
-		GetInvitedUsersStakes(id uint64) ([]models.StakeShow, error)
+		GetInvitedUsersStakes(id uint64, pagination filters.Pagination) ([]models.StakeShow, error)
 		GetStakeAndBoxUserStatByID(id uint64) (*models.StakeAndBoxStat, error)
 
 		AddBoxesByUserID(userID uint64, newBoxes int64) error
@@ -39,15 +39,15 @@ type (
 		SaveReward(reward *models.Reward) (*models.Reward, error)
 		UpdateReward(reward *models.Reward) error
 		SaveTXAndUpdateReward(info *models.StakeAndBoxStat, newStake, reward float64) error
-		GetUserRewardsByID(id uint64) ([]models.RewardShow, error)
-		GetAllRewards() ([]models.RewardShow, error)
+		GetUserRewardsByID(id uint64, pagination filters.Pagination) ([]models.RewardShow, error)
+		GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, error)
 		GetTotalRewardStats() (*models.TotalReward, error)
 		GetMyStakeSum(id uint64) (*models.StakeAndProgress, error)
-		GetTotalStats(req filters.PeriodInfoRequest) ([]models.TotalStats, error)
-		GetTotalStakeStats(req filters.PeriodInfoRequest) ([]models.TotalStakeStats, error)
-		GetFriendsStakeStats(req filters.PeriodInfoRequest) ([]models.FriendStakeStats, error)
-		GetRewardPaymentStats(req filters.PeriodInfoRequest) ([]models.RewardPaymentsStats, error)
-		GetUsersInvitationsStats() ([]models.InvitationsStats, error)
+		GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStats, error)
+		GetTotalStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStakeStats, error)
+		GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, error)
+		GetRewardPaymentStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.RewardPaymentsStats, error)
+		GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, error)
 
 		GetRewardsPool() (*models.RewardsPool, error)
 		UpdateRewardsPool(pool *models.RewardsPool) error

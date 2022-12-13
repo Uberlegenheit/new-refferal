@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
+	"new-refferal/filters"
 	"new-refferal/log"
 	"new-refferal/models"
 )
@@ -19,7 +20,7 @@ func (api *API) UpdateReward(c *gin.Context) {
 	err := api.services.UpdateReward(&reward)
 	if err != nil {
 		log.Error("[api] UpdateReward: UpdateReward", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -27,10 +28,17 @@ func (api *API) UpdateReward(c *gin.Context) {
 }
 
 func (api *API) GetAllRewards(c *gin.Context) {
-	rewards, err := api.services.GetAllRewards()
+	var pagination filters.Pagination
+	if err := c.Bind(&pagination); err != nil {
+		log.Error("[api] GetAllRewards: Bind", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	rewards, err := api.services.GetAllRewards(pagination)
 	if err != nil {
 		log.Error("[api] GetAllRewards: GetAllRewards", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -46,10 +54,17 @@ func (api *API) GetMyRewards(c *gin.Context) {
 	}
 	user := val.(models.User)
 
-	rewards, err := api.services.GetUserRewardsByID(&user)
+	var pagination filters.Pagination
+	if err := c.Bind(&pagination); err != nil {
+		log.Error("[api] GetMyRewards: Bind", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	rewards, err := api.services.GetUserRewardsByID(&user, pagination)
 	if err != nil {
 		log.Error("[api] GetAllRewards: GetAllRewards", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -68,7 +83,7 @@ func (api *API) GetMyLink(c *gin.Context) {
 	link, err := api.services.GetLinkByUserID(&user)
 	if err != nil {
 		log.Error("[api] GetMyLink: GetLinkByUserID", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -84,10 +99,17 @@ func (api *API) GetInvitedFriends(c *gin.Context) {
 	}
 	user := val.(models.User)
 
-	invited, err := api.services.GetInvitedUsersStakes(&user)
+	var pagination filters.Pagination
+	if err := c.Bind(&pagination); err != nil {
+		log.Error("[api] GetInvitedFriends: Bind", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	invited, err := api.services.GetInvitedUsersStakes(&user, pagination)
 	if err != nil {
 		log.Error("[api] GetInvitedFriends: GetInvitedUsersStakes", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
