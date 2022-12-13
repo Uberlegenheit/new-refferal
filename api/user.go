@@ -37,10 +37,18 @@ func (api *API) Me(c *gin.Context) {
 		return
 	}
 
+	stake, err := api.services.GetMyStakeSum(user.ID)
+	if err != nil {
+		log.Error("[api] Me: GetMyStakeSum", zap.Error(err))
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"user": user,
-		"box":  box,
-		"link": link,
+		"user":  user,
+		"box":   box,
+		"link":  link,
+		"stake": stake,
 	})
 }
 

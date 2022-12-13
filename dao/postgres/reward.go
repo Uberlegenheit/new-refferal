@@ -79,8 +79,8 @@ func (db *Postgres) GetAllRewards() ([]models.RewardShow, error) {
 	return rewards, nil
 }
 
-func (db *Postgres) GetTotalRewardStats() ([]models.TotalReward, error) {
-	rewards := make([]models.TotalReward, 0)
+func (db *Postgres) GetTotalRewardStats() (*models.TotalReward, error) {
+	rewards := new(models.TotalReward)
 
 	if err := db.db.Model(&models.TotalReward{}).
 		Select(`sum(amount) as total_paid,

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"new-refferal/filters"
 	"new-refferal/models"
@@ -47,6 +48,24 @@ func (db *Postgres) GetTotalStats(req filters.PeriodInfoRequest) ([]models.Total
 	}
 
 	return stats, nil
+}
+
+func (db *Postgres) GetMyStakeSum(id uint64) (*models.StakeAndProgress, error) {
+	stake := new(models.StakeAndProgress)
+
+	if err := db.db.Model(&models.StakeAndProgress{}).
+		Select("s.user_id, sum(s.amount) as total_stake").
+		Table(fmt.Sprintf("%s s", models.StakesTable)).
+		Where("s.user_id = ?", id).
+		Group("s.user_id").
+		Scan(&stake).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return stake, nil
 }
 
 func (db *Postgres) GetTotalStakeStats(req filters.PeriodInfoRequest) ([]models.TotalStakeStats, error) {

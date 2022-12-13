@@ -31,3 +31,9 @@ type StakeAndBoxStat struct {
 	TotalStake float64 `gorm:"column:total_stake" json:"total_stake"`
 	TotalBoxes int64   `gorm:"column:total_boxes" json:"total_boxes"`
 }
+
+type StakeAndProgress struct {
+	UserID     uint64  `gorm:"column:user_id"     json:"user_id"`
+	TotalStake float64 `gorm:"column:total_stake" json:"total_stake"`
+	Progress   float64 `json:"progress"`
+}

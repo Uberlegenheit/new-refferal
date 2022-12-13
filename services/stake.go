@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+const StakeToBox = 0.001
+
 func checkHashAndSum(stake *models.Stake, addr string) (bool, error) {
 	u := url.URL{
 		Scheme: "https",
@@ -76,7 +78,7 @@ func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake, user *models.User)
 		return nil, fmt.Errorf("dao.GetStakeAndBoxUserStatByID: %s", err.Error())
 	}
 
-	boxesAvailable := int64((stats.TotalStake + stake.Amount) / 0.001 /*10.0*/)
+	boxesAvailable := int64((stats.TotalStake + stake.Amount) / StakeToBox /*10.0*/)
 	newBoxes := boxesAvailable - stats.TotalBoxes
 	if newBoxes != 0 {
 		err := s.dao.AddBoxesByUserID(stake.UserID, newBoxes)

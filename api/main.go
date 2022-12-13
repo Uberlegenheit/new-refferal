@@ -167,6 +167,7 @@ func (api *API) initialize() {
 
 	api.router.POST("/register", api.SignIn)
 	api.router.POST("/refresh", api.Refresh)
+	api.router.GET("/all_rewards", api.GetAllRewards)
 
 	authGroup := api.router.Group("/auth")
 	authGroup.Use(api.AuthMiddleware())
@@ -176,8 +177,6 @@ func (api *API) initialize() {
 		authGroup.POST("/delegate", api.Delegate)
 		authGroup.GET("/key", api.GetDelegationKey)
 
-		authGroup.GET("/rewards_total_stats", api.GetTotalRewardStats)
-		authGroup.GET("/all_rewards", api.GetAllRewards)
 		authGroup.GET("/invitations_stats", api.GetInvitationsStats)
 
 		authGroup.GET("/my_rewards", api.GetMyRewards)
@@ -191,6 +190,7 @@ func (api *API) initialize() {
 	adminGroup := authGroup.Group("/admin")
 	adminGroup.Use(api.AdminMiddleware())
 	{
+		adminGroup.GET("/rewards_total_stats", api.GetTotalRewardStats)
 		adminGroup.GET("/total_stats", api.GetTotalStats)
 		adminGroup.GET("/total_stake_stats", api.GetTotalStakeStats)
 		adminGroup.GET("/friends_stake_stats", api.GetFriendsStakeStats)

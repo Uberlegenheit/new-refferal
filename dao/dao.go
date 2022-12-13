@@ -41,7 +41,8 @@ type (
 		SaveTXAndUpdateReward(info *models.StakeAndBoxStat, newStake, reward float64) error
 		GetUserRewardsByID(id uint64) ([]models.RewardShow, error)
 		GetAllRewards() ([]models.RewardShow, error)
-		GetTotalRewardStats() ([]models.TotalReward, error)
+		GetTotalRewardStats() (*models.TotalReward, error)
+		GetMyStakeSum(id uint64) (*models.StakeAndProgress, error)
 		GetTotalStats(req filters.PeriodInfoRequest) ([]models.TotalStats, error)
 		GetTotalStakeStats(req filters.PeriodInfoRequest) ([]models.TotalStakeStats, error)
 		GetFriendsStakeStats(req filters.PeriodInfoRequest) ([]models.FriendStakeStats, error)
