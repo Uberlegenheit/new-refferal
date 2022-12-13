@@ -29,7 +29,7 @@ func (api *API) UpdateReward(c *gin.Context) {
 
 func (api *API) GetAllRewards(c *gin.Context) {
 	var pagination filters.Pagination
-	if err := c.Bind(&pagination); err != nil {
+	if err := c.BindQuery(&pagination); err != nil {
 		log.Error("[api] GetAllRewards: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -55,7 +55,7 @@ func (api *API) GetMyRewards(c *gin.Context) {
 	user := val.(models.User)
 
 	var pagination filters.Pagination
-	if err := c.Bind(&pagination); err != nil {
+	if err := c.BindQuery(&pagination); err != nil {
 		log.Error("[api] GetMyRewards: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -100,7 +100,7 @@ func (api *API) GetInvitedFriends(c *gin.Context) {
 	user := val.(models.User)
 
 	var pagination filters.Pagination
-	if err := c.Bind(&pagination); err != nil {
+	if err := c.BindQuery(&pagination); err != nil {
 		log.Error("[api] GetInvitedFriends: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

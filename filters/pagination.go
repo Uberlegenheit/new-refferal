@@ -11,12 +11,12 @@ const (
 
 type (
 	Pagination struct {
-		Limit uint64 `schema:"limit"`
-		Page  uint64 `schema:"page"`
+		Limit uint64 `form:"limit"`
+		Page  uint64 `form:"page"`
 	}
 	PeriodInfoRequest struct {
-		Start string `schema:"start"`
-		End   string `schema:"end"`
+		Start string `form:"start"`
+		End   string `form:"end"`
 	}
 )
 

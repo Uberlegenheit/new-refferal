@@ -21,14 +21,14 @@ func (api *API) GetTotalRewardStats(c *gin.Context) {
 
 func (api *API) GetTotalStats(c *gin.Context) {
 	var req filters.PeriodInfoRequest
-	if err := c.Bind(&req); err != nil {
+	if err := c.BindQuery(&req); err != nil {
 		log.Error("[api] GetTotalStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var pagination filters.Pagination
-	if err := c.Bind(&pagination); err != nil {
+	if err := c.BindQuery(&pagination); err != nil {
 		log.Error("[api] GetTotalStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -46,14 +46,14 @@ func (api *API) GetTotalStats(c *gin.Context) {
 
 func (api *API) GetTotalStakeStats(c *gin.Context) {
 	var req filters.PeriodInfoRequest
-	if err := c.Bind(&req); err != nil {
+	if err := c.BindQuery(&req); err != nil {
 		log.Error("[api] GetTotalStakeStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var pagination filters.Pagination
-	if err := c.Bind(&pagination); err != nil {
+	if err := c.BindQuery(&pagination); err != nil {
 		log.Error("[api] GetTotalStakeStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -71,14 +71,14 @@ func (api *API) GetTotalStakeStats(c *gin.Context) {
 
 func (api *API) GetFriendsStakeStats(c *gin.Context) {
 	var req filters.PeriodInfoRequest
-	if err := c.Bind(&req); err != nil {
+	if err := c.BindQuery(&req); err != nil {
 		log.Error("[api] GetFriendsStakeStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var pagination filters.Pagination
-	if err := c.Bind(&pagination); err != nil {
+	if err := c.BindQuery(&pagination); err != nil {
 		log.Error("[api] GetFriendsStakeStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -96,14 +96,14 @@ func (api *API) GetFriendsStakeStats(c *gin.Context) {
 
 func (api *API) GetBoxesStats(c *gin.Context) {
 	var req filters.PeriodInfoRequest
-	if err := c.Bind(&req); err != nil {
+	if err := c.BindQuery(&req); err != nil {
 		log.Error("[api] GetBoxesStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var pagination filters.Pagination
-	if err := c.Bind(&pagination); err != nil {
+	if err := c.BindQuery(&pagination); err != nil {
 		log.Error("[api] GetBoxesStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -121,7 +121,7 @@ func (api *API) GetBoxesStats(c *gin.Context) {
 
 func (api *API) GetInvitationsStats(c *gin.Context) {
 	var pagination filters.Pagination
-	if err := c.Bind(&pagination); err != nil {
+	if err := c.BindQuery(&pagination); err != nil {
 		log.Error("[api] GetInvitationsStats: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -47,7 +47,7 @@ func (api *API) UpdatePayout(c *gin.Context) {
 
 func (api *API) GetPayouts(c *gin.Context) {
 	var pagination filters.Pagination
-	if err := c.Bind(&pagination); err != nil {
+	if err := c.BindQuery(&pagination); err != nil {
 		log.Error("[api] GetPayouts: Bind", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
