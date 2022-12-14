@@ -26,7 +26,7 @@ func (db *Postgres) SaveDelegationTxAndCreateReward(stake *models.Stake) (*model
 		}
 
 		reward := new(models.Reward)
-		if err := tx.First(reward, "user_id = ? AND reward_type = 1", stake.UserID).Error; err != nil {
+		if err := tx.First(reward, "user_id = ? AND type_id = 1", stake.UserID).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				reward = nil
 			} else {
@@ -221,7 +221,7 @@ func (db *Postgres) SaveTXAndUpdateReward(info *models.StakeAndBoxStat, stake, r
 			Where("user_id = ? and type_id = 1", info.UserID).
 			Updates(&models.Reward{
 				UserID:  info.UserID,
-				Status:  "updated",
+				Status:  "claim your reward via wallet",
 				TypeID:  1,
 				Amount:  reward,
 				Hash:    "updated rewards",
