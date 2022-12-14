@@ -43,7 +43,7 @@ func (db *Postgres) UpdatePayout(payout *models.Payout) error {
 	return nil
 }
 
-func (db *Postgres) GetPayouts(pagination filters.Pagination) ([]models.PayoutShow, error) {
+func (db *Postgres) GetPayouts(pagination filters.Pagination) ([]models.PayoutShow, uint64, error) {
 	pagination.Validate()
 	payouts := make([]models.PayoutShow, 0)
 
@@ -56,10 +56,21 @@ func (db *Postgres) GetPayouts(pagination filters.Pagination) ([]models.PayoutSh
 		Order("p.created desc").
 		Scan(&payouts).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, 0, nil
 		}
-		return nil, err
+		return nil, 0, err
 	}
 
-	return payouts, nil
+	length := uint64(len(payouts))
+	offset := pagination.Offset()
+	limit := pagination.Limit
+	if offset > length {
+		return nil, length, nil
+	} else if limit > length {
+		payouts = payouts[offset:length]
+	} else {
+		payouts = payouts[offset:limit]
+	}
+
+	return payouts, length, nil
 }

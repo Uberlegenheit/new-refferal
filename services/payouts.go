@@ -24,11 +24,11 @@ func (s *ServiceFacade) UpdatePayout(payout *models.Payout) error {
 	return nil
 }
 
-func (s *ServiceFacade) GetPayouts(pagination filters.Pagination) ([]models.PayoutShow, error) {
-	payouts, err := s.dao.GetPayouts(pagination)
+func (s *ServiceFacade) GetPayouts(pagination filters.Pagination) ([]models.PayoutShow, uint64, error) {
+	payouts, length, err := s.dao.GetPayouts(pagination)
 	if err != nil {
-		return nil, fmt.Errorf("dao.GetPayouts: %s", err.Error())
+		return nil, length, fmt.Errorf("dao.GetPayouts: %s", err.Error())
 	}
 
-	return payouts, nil
+	return payouts, length, nil
 }

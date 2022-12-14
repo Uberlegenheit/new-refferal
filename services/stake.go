@@ -112,13 +112,13 @@ func (s *ServiceFacade) GetDelegationByTxHash(stake *models.Stake) (*models.Stak
 	return nil, nil
 }
 
-func (s *ServiceFacade) GetInvitedUsersStakes(user *models.User, pagination filters.Pagination) ([]models.StakeShow, error) {
-	stakes, err := s.dao.GetInvitedUsersStakes(user.ID, pagination)
+func (s *ServiceFacade) GetInvitedUsersStakes(user *models.User, pagination filters.Pagination) ([]models.StakeShow, uint64, error) {
+	stakes, length, err := s.dao.GetInvitedUsersStakes(user.ID, pagination)
 	if err != nil {
-		return nil, fmt.Errorf("dao.GetInvitedUsersStakes: %s", err.Error())
+		return nil, length, fmt.Errorf("dao.GetInvitedUsersStakes: %s", err.Error())
 	}
 
-	return stakes, nil
+	return stakes, length, nil
 }
 
 func (s *ServiceFacade) GetDelegationKey(user *models.User) (string, error) {

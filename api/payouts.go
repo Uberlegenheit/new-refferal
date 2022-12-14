@@ -53,12 +53,15 @@ func (api *API) GetPayouts(c *gin.Context) {
 		return
 	}
 
-	payouts, err := api.services.GetPayouts(pagination)
+	payouts, length, err := api.services.GetPayouts(pagination)
 	if err != nil {
 		log.Error("[api] GetPayouts: GetPayouts", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, payouts)
+	c.JSON(http.StatusOK, gin.H{
+		"payouts": payouts,
+		"length":  length,
+	})
 }

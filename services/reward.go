@@ -15,20 +15,20 @@ func (s *ServiceFacade) UpdateReward(reward *models.Reward) error {
 	return nil
 }
 
-func (s *ServiceFacade) GetUserRewardsByID(user *models.User, pagination filters.Pagination) ([]models.RewardShow, error) {
-	rewards, err := s.dao.GetUserRewardsByID(user.ID, pagination)
+func (s *ServiceFacade) GetUserRewardsByID(user *models.User, pagination filters.Pagination) ([]models.RewardShow, uint64, error) {
+	rewards, length, err := s.dao.GetUserRewardsByID(user.ID, pagination)
 	if err != nil {
-		return nil, fmt.Errorf("dao.GetUserRewardsByID: %s", err.Error())
+		return nil, length, fmt.Errorf("dao.GetUserRewardsByID: %s", err.Error())
 	}
 
-	return rewards, nil
+	return rewards, length, nil
 }
 
-func (s *ServiceFacade) GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, error) {
-	rewards, err := s.dao.GetAllRewards(pagination)
+func (s *ServiceFacade) GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, uint64, error) {
+	rewards, length, err := s.dao.GetAllRewards(pagination)
 	if err != nil {
-		return nil, fmt.Errorf("dao.GetAllRewards: %s", err.Error())
+		return nil, length, fmt.Errorf("dao.GetAllRewards: %s", err.Error())
 	}
 
-	return rewards, nil
+	return rewards, length, nil
 }

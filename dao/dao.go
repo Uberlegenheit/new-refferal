@@ -29,12 +29,12 @@ type (
 		SaveDelegationTxAndAddBoxes(stake *models.Stake) (*models.Stake, error)
 		GetDelegationByTxHash(stake *models.Stake) (*models.Stake, error)
 		SetUserDelegationsFalse(id uint64) error
-		GetInvitedUsersStakes(id uint64, pagination filters.Pagination) ([]models.StakeShow, error)
+		GetInvitedUsersStakes(id uint64, pagination filters.Pagination) ([]models.StakeShow, uint64, error)
 		GetStakeAndBoxUserStatByID(id uint64) (*models.StakeAndBoxStat, error)
 
 		CreatePayout(payout *models.Payout) (*models.Payout, error)
 		UpdatePayout(payout *models.Payout) error
-		GetPayouts(pagination filters.Pagination) ([]models.PayoutShow, error)
+		GetPayouts(pagination filters.Pagination) ([]models.PayoutShow, uint64, error)
 
 		AddBoxesByUserID(userID uint64, newBoxes int64) error
 		OpenBoxByUserID(userID uint64) error
@@ -43,16 +43,16 @@ type (
 		SaveReward(reward *models.Reward) (*models.Reward, error)
 		UpdateReward(reward *models.Reward) error
 		SaveTXAndUpdateReward(info *models.StakeAndBoxStat, newStake, reward float64) error
-		GetUserRewardsByID(id uint64, pagination filters.Pagination) ([]models.RewardShow, error)
-		GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, error)
+		GetUserRewardsByID(id uint64, pagination filters.Pagination) ([]models.RewardShow, uint64, error)
+		GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, uint64, error)
 		GetTotalRewardStats() (*models.TotalReward, error)
 		GetMyStakeSum(id uint64) (*models.StakeAndProgress, error)
 
-		GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) (*models.TotalStats, error)
-		GetBoxesStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.BoxStats, error)
-		GetTotalStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStakeStats, error)
-		GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, error)
-		GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, error)
+		GetTotalStats(req filters.PeriodInfoRequest) (*models.TotalStats, error)
+		GetBoxesStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.BoxStats, uint64, error)
+		GetTotalStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStakeStats, uint64, error)
+		GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, uint64, error)
+		GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, uint64, error)
 
 		GetRewardsPool() (*models.RewardsPool, error)
 		UpdateRewardsPool(pool *models.RewardsPool) error

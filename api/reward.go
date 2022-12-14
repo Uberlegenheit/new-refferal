@@ -35,14 +35,17 @@ func (api *API) GetAllRewards(c *gin.Context) {
 		return
 	}
 
-	rewards, err := api.services.GetAllRewards(pagination)
+	rewards, length, err := api.services.GetAllRewards(pagination)
 	if err != nil {
 		log.Error("[api] GetAllRewards: GetAllRewards", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, rewards)
+	c.JSON(http.StatusOK, gin.H{
+		"rewards": rewards,
+		"length":  length,
+	})
 }
 
 func (api *API) GetMyRewards(c *gin.Context) {
@@ -61,14 +64,17 @@ func (api *API) GetMyRewards(c *gin.Context) {
 		return
 	}
 
-	rewards, err := api.services.GetUserRewardsByID(&user, pagination)
+	rewards, length, err := api.services.GetUserRewardsByID(&user, pagination)
 	if err != nil {
 		log.Error("[api] GetAllRewards: GetAllRewards", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, rewards)
+	c.JSON(http.StatusOK, gin.H{
+		"rewards": rewards,
+		"length":  length,
+	})
 }
 
 func (api *API) GetMyLink(c *gin.Context) {
@@ -106,12 +112,15 @@ func (api *API) GetInvitedFriends(c *gin.Context) {
 		return
 	}
 
-	invited, err := api.services.GetInvitedUsersStakes(&user, pagination)
+	invited, length, err := api.services.GetInvitedUsersStakes(&user, pagination)
 	if err != nil {
 		log.Error("[api] GetInvitedFriends: GetInvitedUsersStakes", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, invited)
+	c.JSON(http.StatusOK, gin.H{
+		"invited": invited,
+		"length":  length,
+	})
 }

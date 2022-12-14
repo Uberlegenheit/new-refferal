@@ -27,14 +27,7 @@ func (api *API) GetTotalStats(c *gin.Context) {
 		return
 	}
 
-	var pagination filters.Pagination
-	if err := c.BindQuery(&pagination); err != nil {
-		log.Error("[api] GetTotalStats: Bind", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	stats, err := api.services.GetTotalStats(req, pagination)
+	stats, err := api.services.GetTotalStats(req)
 	if err != nil {
 		log.Error("[api] GetTotalStats: GetTotalStats", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -59,14 +52,17 @@ func (api *API) GetTotalStakeStats(c *gin.Context) {
 		return
 	}
 
-	stats, err := api.services.GetTotalStakeStats(req, pagination)
+	stats, length, err := api.services.GetTotalStakeStats(req, pagination)
 	if err != nil {
 		log.Error("[api] GetTotalStakeStats: GetTotalStakeStats", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, stats)
+	c.JSON(http.StatusOK, gin.H{
+		"stats":  stats,
+		"length": length,
+	})
 }
 
 func (api *API) GetFriendsStakeStats(c *gin.Context) {
@@ -84,14 +80,17 @@ func (api *API) GetFriendsStakeStats(c *gin.Context) {
 		return
 	}
 
-	stats, err := api.services.GetFriendsStakeStats(req, pagination)
+	stats, length, err := api.services.GetFriendsStakeStats(req, pagination)
 	if err != nil {
 		log.Error("[api] GetFriendsStakeStats: GetFriendsStakeStats", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, stats)
+	c.JSON(http.StatusOK, gin.H{
+		"stats":  stats,
+		"length": length,
+	})
 }
 
 func (api *API) GetBoxesStats(c *gin.Context) {
@@ -109,14 +108,17 @@ func (api *API) GetBoxesStats(c *gin.Context) {
 		return
 	}
 
-	stats, err := api.services.GetBoxesStats(req, pagination)
+	stats, length, err := api.services.GetBoxesStats(req, pagination)
 	if err != nil {
 		log.Error("[api] GetBoxesStats: GetBoxesStats", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, stats)
+	c.JSON(http.StatusOK, gin.H{
+		"stats":  stats,
+		"length": length,
+	})
 }
 
 func (api *API) GetInvitationsStats(c *gin.Context) {
@@ -127,12 +129,15 @@ func (api *API) GetInvitationsStats(c *gin.Context) {
 		return
 	}
 
-	stats, err := api.services.GetUsersInvitationsStats(pagination)
+	stats, length, err := api.services.GetUsersInvitationsStats(pagination)
 	if err != nil {
 		log.Error("[api] GetInvitationsStats: GetUsersInvitationsStats", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, stats)
+	c.JSON(http.StatusOK, gin.H{
+		"stats":  stats,
+		"length": length,
+	})
 }

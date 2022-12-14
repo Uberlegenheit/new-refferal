@@ -8,13 +8,10 @@ import (
 	"new-refferal/models"
 )
 
-func (db *Postgres) GetTotalStats(req filters.PeriodInfoRequest, pagination filters.Pagination) (*models.TotalStats, error) {
-	pagination.Validate()
+func (db *Postgres) GetTotalStats(req filters.PeriodInfoRequest) (*models.TotalStats, error) {
 	stats := new(models.TotalStats)
 
-	if err := db.db.Limit(int(pagination.Limit)).
-		Offset(int(pagination.Offset())).
-		Raw(`select (select coalesce(round(CAST(sum(s.amount) as numeric), 8), 0)
+	if err := db.db.Raw(`select (select coalesce(round(CAST(sum(s.amount) as numeric), 8), 0)
 						from stakes s
 						where s.status = true and s.type_id = 1 and (s.created >= ? and s.created <= ?)) as stake_sum,
 						(select coalesce(round(CAST(sum(s.amount) as numeric), 8), 0)
@@ -36,13 +33,13 @@ func (db *Postgres) GetTotalStats(req filters.PeriodInfoRequest, pagination filt
 						(select coalesce(round(CAST(sum(r.amount) as numeric), 8), 0)
 						 from rewards r
 						 where r.type_id = 2 and status = 'pending' and (r.created >= ? and r.created <= ?)) as boxes_unpaid`,
-			req.Start, req.End,
-			req.Start, req.End,
-			req.Start, req.End,
-			req.Start, req.End,
-			req.Start, req.End,
-			req.Start, req.End,
-			req.Start, req.End).
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End,
+		req.Start, req.End).
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -71,7 +68,7 @@ func (db *Postgres) GetMyStakeSum(id uint64) (*models.StakeAndProgress, error) {
 	return stake, nil
 }
 
-func (db *Postgres) GetTotalStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStakeStats, error) {
+func (db *Postgres) GetTotalStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.TotalStakeStats, uint64, error) {
 	pagination.Validate()
 	stats := make([]models.TotalStakeStats, 0)
 
@@ -94,15 +91,26 @@ func (db *Postgres) GetTotalStakeStats(req filters.PeriodInfoRequest, pagination
 		Where("s.status = true AND (s.created >= ? AND s.created <= ?)", req.Start, req.End).
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, 0, nil
 		}
-		return nil, err
+		return nil, 0, err
 	}
 
-	return stats, nil
+	length := uint64(len(stats))
+	offset := pagination.Offset()
+	limit := pagination.Limit
+	if offset > length {
+		return nil, length, nil
+	} else if limit > length {
+		stats = stats[offset:length]
+	} else {
+		stats = stats[offset:limit]
+	}
+
+	return stats, length, nil
 }
 
-func (db *Postgres) GetBoxesStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.BoxStats, error) {
+func (db *Postgres) GetBoxesStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.BoxStats, uint64, error) {
 	pagination.Validate()
 	stats := make([]models.BoxStats, 0)
 
@@ -121,15 +129,26 @@ func (db *Postgres) GetBoxesStats(req filters.PeriodInfoRequest, pagination filt
 		Where("r.type_id = 2 AND (r.created >= ? AND r.created <= ?)", req.Start, req.End).
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, 0, nil
 		}
-		return nil, err
+		return nil, 0, err
 	}
 
-	return stats, nil
+	length := uint64(len(stats))
+	offset := pagination.Offset()
+	limit := pagination.Limit
+	if offset > length {
+		return nil, length, nil
+	} else if limit > length {
+		stats = stats[offset:length]
+	} else {
+		stats = stats[offset:limit]
+	}
+
+	return stats, length, nil
 }
 
-func (db *Postgres) GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, error) {
+func (db *Postgres) GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, uint64, error) {
 	pagination.Validate()
 	stats := make([]models.FriendStakeStats, 0)
 
@@ -154,10 +173,21 @@ func (db *Postgres) GetFriendsStakeStats(req filters.PeriodInfoRequest, paginati
 		Where("s.status = true AND (s.created >= ? AND s.created <= ?)", req.Start, req.End).
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, 0, nil
 		}
-		return nil, err
+		return nil, 0, err
 	}
 
-	return stats, nil
+	length := uint64(len(stats))
+	offset := pagination.Offset()
+	limit := pagination.Limit
+	if offset > length {
+		return nil, length, nil
+	} else if limit > length {
+		stats = stats[offset:length]
+	} else {
+		stats = stats[offset:limit]
+	}
+
+	return stats, length, nil
 }

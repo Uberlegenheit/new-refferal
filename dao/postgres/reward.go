@@ -41,13 +41,11 @@ func (db *Postgres) UpdateReward(reward *models.Reward) error {
 	return nil
 }
 
-func (db *Postgres) GetUserRewardsByID(id uint64, pagination filters.Pagination) ([]models.RewardShow, error) {
+func (db *Postgres) GetUserRewardsByID(id uint64, pagination filters.Pagination) ([]models.RewardShow, uint64, error) {
 	pagination.Validate()
 	rewards := make([]models.RewardShow, 0)
 
-	if err := db.db.Limit(int(pagination.Limit)).
-		Offset(int(pagination.Offset())).
-		Model(&models.RewardShow{}).
+	if err := db.db.Model(&models.RewardShow{}).
 		Select(`r.id, u.wallet_name, u.wallet_address, r.status, rt."name" as type, r.amount, r.tx_hash, r.created`).
 		Table(fmt.Sprintf("%s r", models.RewardsTable)).
 		Joins("inner join reward_types rt on rt.id = r.type_id").
@@ -56,21 +54,30 @@ func (db *Postgres) GetUserRewardsByID(id uint64, pagination filters.Pagination)
 		Order("r.created desc").
 		Scan(&rewards).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, 0, nil
 		}
-		return nil, err
+		return nil, 0, err
 	}
 
-	return rewards, nil
+	length := uint64(len(rewards))
+	offset := pagination.Offset()
+	limit := pagination.Limit
+	if offset > length {
+		return nil, length, nil
+	} else if limit > length {
+		rewards = rewards[offset:length]
+	} else {
+		rewards = rewards[offset:limit]
+	}
+
+	return rewards, length, nil
 }
 
-func (db *Postgres) GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, error) {
+func (db *Postgres) GetAllRewards(pagination filters.Pagination) ([]models.RewardShow, uint64, error) {
 	pagination.Validate()
 	rewards := make([]models.RewardShow, 0)
 
-	if err := db.db.Limit(int(pagination.Limit)).
-		Offset(int(pagination.Offset())).
-		Model(&models.RewardShow{}).
+	if err := db.db.Model(&models.RewardShow{}).
 		Select(`r.id, u.wallet_name, u.wallet_address, r.status, rt."name" as type, r.amount, r.tx_hash, r.created`).
 		Table(fmt.Sprintf("%s r", models.RewardsTable)).
 		Joins("inner join reward_types rt on rt.id = r.type_id").
@@ -78,12 +85,23 @@ func (db *Postgres) GetAllRewards(pagination filters.Pagination) ([]models.Rewar
 		Order("r.created desc").
 		Scan(&rewards).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, 0, nil
 		}
-		return nil, err
+		return nil, 0, err
 	}
 
-	return rewards, nil
+	length := uint64(len(rewards))
+	offset := pagination.Offset()
+	limit := pagination.Limit
+	if offset > length {
+		return nil, length, nil
+	} else if limit > length {
+		rewards = rewards[offset:length]
+	} else {
+		rewards = rewards[offset:limit]
+	}
+
+	return rewards, length, nil
 }
 
 func (db *Postgres) GetTotalRewardStats() (*models.TotalReward, error) {
@@ -104,13 +122,11 @@ func (db *Postgres) GetTotalRewardStats() (*models.TotalReward, error) {
 	return rewards, nil
 }
 
-func (db *Postgres) GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, error) {
+func (db *Postgres) GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, uint64, error) {
 	pagination.Validate()
 	stats := make([]models.InvitationsStats, 0)
 
-	if err := db.db.Limit(int(pagination.Limit)).
-		Offset(int(pagination.Offset())).
-		Model(&models.InvitationsStats{}).
+	if err := db.db.Model(&models.InvitationsStats{}).
 		Select(`u.id as user_id,
 					  u.wallet_name,
 					  u.wallet_address,
@@ -122,12 +138,23 @@ func (db *Postgres) GetUsersInvitationsStats(pagination filters.Pagination) ([]m
 		Group("u.id").
 		Scan(&stats).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, 0, nil
 		}
-		return nil, err
+		return nil, 0, err
 	}
 
-	return stats, nil
+	length := uint64(len(stats))
+	offset := pagination.Offset()
+	limit := pagination.Limit
+	if offset > length {
+		return nil, length, nil
+	} else if limit > length {
+		stats = stats[offset:length]
+	} else {
+		stats = stats[offset:limit]
+	}
+
+	return stats, length, nil
 }
 
 func (db *Postgres) CreateAndUpdateRewardsState(pool *models.RewardsPool, user *models.User, amount float64) error {
