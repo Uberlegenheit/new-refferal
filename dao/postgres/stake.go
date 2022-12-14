@@ -74,7 +74,7 @@ func (db *Postgres) GetInvitedUsersStakes(id uint64, pagination filters.Paginati
 	} else if limit > length {
 		stakes = stakes[offset:length]
 	} else {
-		stakes = stakes[offset:limit]
+		stakes = stakes[offset : offset+limit]
 	}
 
 	return stakes, length, nil

@@ -67,7 +67,7 @@ func (db *Postgres) GetUserRewardsByID(id uint64, pagination filters.Pagination)
 	} else if limit > length {
 		rewards = rewards[offset:length]
 	} else {
-		rewards = rewards[offset:limit]
+		rewards = rewards[offset : offset+limit]
 	}
 
 	return rewards, length, nil
@@ -98,7 +98,7 @@ func (db *Postgres) GetAllRewards(pagination filters.Pagination) ([]models.Rewar
 	} else if limit > length {
 		rewards = rewards[offset:length]
 	} else {
-		rewards = rewards[offset:limit]
+		rewards = rewards[offset : offset+limit]
 	}
 
 	return rewards, length, nil
@@ -151,7 +151,7 @@ func (db *Postgres) GetUsersInvitationsStats(pagination filters.Pagination) ([]m
 	} else if limit > length {
 		stats = stats[offset:length]
 	} else {
-		stats = stats[offset:limit]
+		stats = stats[offset : offset+limit]
 	}
 
 	return stats, length, nil

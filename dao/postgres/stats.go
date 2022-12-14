@@ -104,7 +104,7 @@ func (db *Postgres) GetTotalStakeStats(req filters.PeriodInfoRequest, pagination
 	} else if limit > length {
 		stats = stats[offset:length]
 	} else {
-		stats = stats[offset:limit]
+		stats = stats[offset : offset+limit]
 	}
 
 	return stats, length, nil
@@ -142,7 +142,7 @@ func (db *Postgres) GetBoxesStats(req filters.PeriodInfoRequest, pagination filt
 	} else if limit > length {
 		stats = stats[offset:length]
 	} else {
-		stats = stats[offset:limit]
+		stats = stats[offset : offset+limit]
 	}
 
 	return stats, length, nil
@@ -186,7 +186,7 @@ func (db *Postgres) GetFriendsStakeStats(req filters.PeriodInfoRequest, paginati
 	} else if limit > length {
 		stats = stats[offset:length]
 	} else {
-		stats = stats[offset:limit]
+		stats = stats[offset : offset+limit]
 	}
 
 	return stats, length, nil

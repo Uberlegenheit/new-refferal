@@ -17,12 +17,13 @@ import (
 )
 
 const (
-	CosmosAPI           string = "lcd-cosmos.everstake.one"
 	EverstakeCosmosAddr string = "cosmosvaloper1tflk30mq5vgqjdly92kkhhq3raev2hnz6eete3"
 	RewardsPath         string = "%s/cosmos/distribution/v1beta1/delegators/%s/rewards/%s"
 	StakePath           string = "%s/cosmos/staking/v1beta1/validators/%s/delegations/%s"
 	TxPath              string = "%s/cosmos/tx/v1beta1/txs/%s"
 )
+
+var CosmosAPI = os.Getenv("COSMOS_API")
 
 func (s *ServiceFacade) InitCron(cron *gron.Cron) {
 	dur := time.Hour * 6
