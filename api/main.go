@@ -176,6 +176,7 @@ func (api *API) initialize() {
 
 		authGroup.POST("/delegate", api.Delegate)
 		authGroup.GET("/key", api.GetDelegationKey)
+		authGroup.POST("/failed_tx", api.SaveFailedTx)
 
 		authGroup.GET("/invitations_stats", api.GetInvitationsStats)
 
@@ -190,6 +191,8 @@ func (api *API) initialize() {
 	adminGroup := authGroup.Group("/admin")
 	adminGroup.Use(api.AdminMiddleware())
 	{
+		adminGroup.GET("/failed_delegations", api.GetFailedDelegations)
+
 		adminGroup.GET("/total_stats", api.GetTotalStats)
 		adminGroup.GET("/total_stake_stats", api.GetTotalStakeStats)
 		adminGroup.GET("/friends_stake_stats", api.GetFriendsStakeStats)

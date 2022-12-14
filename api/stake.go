@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
+	"new-refferal/filters"
 	"new-refferal/log"
 	"new-refferal/models"
 )
@@ -60,6 +61,33 @@ func (api *API) Delegate(c *gin.Context) {
 	c.JSON(http.StatusOK, stk)
 }
 
+func (api *API) SaveFailedTx(c *gin.Context) {
+	val, ok := c.Get("user")
+	if !ok {
+		log.Error("[api] SaveFailedTx: c.Get", zap.Error(fmt.Errorf("user context is empty")))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user context is empty"})
+		return
+	}
+	user := val.(models.User)
+
+	var stake models.Stake
+	if err := c.ShouldBindJSON(&stake); err != nil {
+		log.Error("[api] SaveFailedTx: ShouldBindJSON", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	stake.UserID = user.ID
+
+	stk, err := api.services.SaveFailedDelegationTx(&stake)
+	if err != nil {
+		log.Error("[api] SaveFailedTx: SaveFailedDelegationTx", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, stk)
+}
+
 func (api *API) GetDelegationKey(c *gin.Context) {
 	val, ok := c.Get("user")
 	if !ok {
@@ -78,5 +106,26 @@ func (api *API) GetDelegationKey(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"key": key,
+	})
+}
+
+func (api *API) GetFailedDelegations(c *gin.Context) {
+	var pagination filters.Pagination
+	if err := c.BindQuery(&pagination); err != nil {
+		log.Error("[api] GetFailedDelegations: Bind", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	delegations, length, err := api.services.GetFailedDelegations(pagination)
+	if err != nil {
+		log.Error("[api] GetFailedDelegations: GetFailedDelegations", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"delegations": delegations,
+		"length":      length,
 	})
 }

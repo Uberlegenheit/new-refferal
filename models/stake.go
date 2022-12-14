@@ -3,6 +3,7 @@ package models
 import "time"
 
 const StakesTable = "stakes"
+const FailedStakesTable = "failed_stakes"
 const InvitationsTable = "invitations"
 
 type Stake struct {
@@ -24,6 +25,19 @@ type StakeShow struct {
 	Hash    string    `gorm:"column:tx_hash"        json:"hash"`
 	Boxes   uint64    `gorm:"column:boxes"          json:"boxes"`
 	Created time.Time `gorm:"column:created"        json:"created"`
+}
+
+type FailedStakeShow struct {
+	ID         uint64    `gorm:"column:id;PRIMARY_KEY" json:"id"`
+	UserID     uint64    `gorm:"column:user_id"        json:"user_id"`
+	WalletName string    `gorm:"column:wallet_name"    json:"wallet_name"`
+	WalletAddr string    `gorm:"column:wallet_address" json:"wallet_address"`
+	Amount     float64   `gorm:"column:amount"         json:"amount"`
+	TypeID     uint64    `gorm:"column:type_id"        json:"type_id"`
+	Type       string    `gorm:"column:type"           json:"type"`
+	Hash       string    `gorm:"column:tx_hash"        json:"hash"`
+	Boxes      uint64    `gorm:"column:boxes_given"    json:"boxes_given"`
+	Created    time.Time `gorm:"column:created"        json:"created"`
 }
 
 type StakeAndBoxStat struct {

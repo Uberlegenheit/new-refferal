@@ -23,10 +23,8 @@ const (
 	TxPath              string = "%s/cosmos/tx/v1beta1/txs/%s"
 )
 
-var CosmosAPI = os.Getenv("COSMOS_API")
-
 func (s *ServiceFacade) InitCron(cron *gron.Cron) {
-	dur := time.Hour * 6
+	dur := time.Second * 20 //time.Hour * 6
 	log.Infof("Scheduled delegations parse every %s", dur)
 	cron.AddFunc(gron.Every(dur), func() {
 		err := s.parseDelegations()
@@ -56,7 +54,7 @@ func (s *ServiceFacade) parseDelegations() error {
 	for i := range users {
 		u := url.URL{
 			Scheme: "https",
-			Host:   CosmosAPI,
+			Host:   os.Getenv("COSMOS_API"),
 			Path:   fmt.Sprintf(RewardsPath, os.Getenv("NODE_TOKEN"), users[i].WalletAddress, EverstakeCosmosAddr),
 		}
 
@@ -74,7 +72,7 @@ func (s *ServiceFacade) parseDelegations() error {
 
 		u = url.URL{
 			Scheme: "https",
-			Host:   CosmosAPI,
+			Host:   os.Getenv("COSMOS_API"),
 			Path:   fmt.Sprintf(StakePath, os.Getenv("NODE_TOKEN"), EverstakeCosmosAddr, users[i].WalletAddress),
 		}
 
@@ -102,7 +100,6 @@ func (s *ServiceFacade) parseDelegations() error {
 		stakeD := decimal.New(stake, -6)
 
 		rewardF, _ := rewardD.Float64()
-
 		stakeF, _ := stakeD.Float64()
 
 		info, err := s.dao.GetStakeAndBoxUserStatByID(users[i].ID)

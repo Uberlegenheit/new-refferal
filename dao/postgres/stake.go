@@ -6,10 +6,58 @@ import (
 	"gorm.io/gorm"
 	"new-refferal/filters"
 	"new-refferal/models"
+	"time"
 )
 
 func (db *Postgres) SaveDelegationTx(stake *models.Stake) (*models.Stake, error) {
-	result := db.db.Create(stake)
+	result := db.db.Table(models.StakesTable).Create(stake)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return stake, nil
+}
+
+func (db *Postgres) SaveDelegationTxAndCreateReward(stake *models.Stake) (*models.Stake, error) {
+	err := db.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Table(models.StakesTable).
+			Create(stake).Error; err != nil {
+			return err
+		}
+
+		reward := new(models.Reward)
+		if err := tx.First(reward, "user_id = ? AND reward_type = 1", stake.UserID).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				reward = nil
+			} else {
+				return err
+			}
+		}
+
+		if reward == nil {
+			if err := tx.Create(&models.Reward{
+				UserID:  stake.UserID,
+				Status:  "claim your reward via wallet",
+				TypeID:  1,
+				Amount:  0,
+				Hash:    "",
+				Created: time.Now(),
+			}).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return stake, err
+}
+
+func (db *Postgres) SaveFailedDelegationTx(stake *models.Stake) (*models.Stake, error) {
+	result := db.db.Table(models.FailedStakesTable).Create(stake)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -114,4 +162,35 @@ func (db *Postgres) GetStakeAndBoxUserStatByID(id uint64) (*models.StakeAndBoxSt
 	}
 
 	return stats, nil
+}
+
+func (db *Postgres) GetFailedDelegations(pagination filters.Pagination) ([]models.FailedStakeShow, uint64, error) {
+	pagination.Validate()
+	stakes := make([]models.FailedStakeShow, 0)
+
+	if err := db.db.Model(&models.FailedStakeShow{}).
+		Select("fs.id, fs.user_id, u.wallet_name, u.wallet_address, fs.amount, fs.status, fs.type_id, fs.boxes_given, fs.tx_hash, fs.created").
+		Table(fmt.Sprintf("%s fs", models.FailedStakesTable)).
+		Joins("inner join stake_types st on st.id = fs.type_id").
+		Joins("inner join users u on u.id = fs.user_id").
+		Order("fs.created desc").
+		Scan(&stakes).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, 0, nil
+		}
+		return nil, 0, err
+	}
+
+	length := uint64(len(stakes))
+	offset := pagination.Offset()
+	limit := pagination.Limit
+	if offset > length {
+		return nil, length, nil
+	} else if limit > length {
+		stakes = stakes[offset:length]
+	} else {
+		stakes = stakes[offset : offset+limit]
+	}
+
+	return stakes, length, nil
 }

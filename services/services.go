@@ -20,6 +20,8 @@ type (
 		GetLinkByUserID(user *models.User) (*models.Link, error)
 
 		SaveDelegationTx(stake *models.Stake, user *models.User) (*models.Stake, error)
+		SaveFailedDelegationTx(stake *models.Stake) (*models.Stake, error)
+		GetFailedDelegations(pagination filters.Pagination) ([]models.FailedStakeShow, uint64, error)
 		GetDelegationByTxHash(stake *models.Stake) (*models.Stake, error)
 		GetInvitedUsersStakes(user *models.User, pagination filters.Pagination) ([]models.StakeShow, uint64, error)
 		GetDelegationKey(user *models.User) (string, error)

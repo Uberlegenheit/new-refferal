@@ -206,8 +206,9 @@ func (db *Postgres) SaveTXAndUpdateReward(info *models.StakeAndBoxStat, stake, r
 	err := db.db.Transaction(func(tx *gorm.DB) error {
 		if info.TotalStake != stake {
 			if err := tx.Model(&models.Stake{}).
-				Update("status", false).
-				Where("user_id = ?", info.UserID).Error; err != nil {
+				Table(models.StakesTable).
+				Where("user_id = ?", info.UserID).
+				Update("status", false).Error; err != nil {
 				return err
 			}
 
@@ -215,6 +216,7 @@ func (db *Postgres) SaveTXAndUpdateReward(info *models.StakeAndBoxStat, stake, r
 				UserID:  info.UserID,
 				Amount:  stake,
 				Status:  true,
+				TypeID:  3,
 				Hash:    "updated delegation balance",
 				Created: time.Now(),
 			}).Error; err != nil {
@@ -223,6 +225,7 @@ func (db *Postgres) SaveTXAndUpdateReward(info *models.StakeAndBoxStat, stake, r
 		}
 
 		if err := db.db.Model(&models.Reward{}).
+			Where("user_id = ? and type_id = 1", info.UserID).
 			Updates(&models.Reward{
 				UserID:  info.UserID,
 				Status:  "updated",
@@ -230,7 +233,7 @@ func (db *Postgres) SaveTXAndUpdateReward(info *models.StakeAndBoxStat, stake, r
 				Amount:  reward,
 				Hash:    "updated rewards",
 				Created: time.Now(),
-			}).Where("user_id = ? and type_id = ?", info.UserID, 2).Error; err != nil {
+			}).Error; err != nil {
 			return err
 		}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
+	"math"
 	"net/http"
 	"net/url"
 	"new-refferal/filters"
@@ -16,10 +17,15 @@ import (
 
 const StakeToBox = 0.001
 
+func roundFloat(val float64, precision uint) float64 {
+	ratio := math.Pow(10, float64(precision))
+	return math.Round(val*ratio) / ratio
+}
+
 func checkHashAndSum(stake *models.Stake, addr string) (bool, error) {
 	u := url.URL{
 		Scheme: "https",
-		Host:   CosmosAPI,
+		Host:   os.Getenv("COSMOS_API"),
 		Path:   fmt.Sprintf(TxPath, os.Getenv("NODE_TOKEN"), stake.Hash),
 	}
 
@@ -38,7 +44,7 @@ func checkHashAndSum(stake *models.Stake, addr string) (bool, error) {
 		return false, err
 	}
 
-	if time.Now().Unix()-tx.TxFetchTime.Timestamp.Unix() > 1200000 {
+	if time.Now().Unix()-tx.TxFetchTime.Timestamp.Unix() > 120 {
 		return false, fmt.Errorf("old transaction")
 	}
 
@@ -79,7 +85,8 @@ func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake, user *models.User)
 		return nil, fmt.Errorf("dao.GetStakeAndBoxUserStatByID: %s", err.Error())
 	}
 
-	boxesAvailable := int64((stats.TotalStake + stake.Amount) / StakeToBox /*10.0*/)
+	boxesAvailable := int64(roundFloat((stats.TotalStake+stake.Amount)/StakeToBox, 5))
+	fmt.Println(boxesAvailable)
 	newBoxes := boxesAvailable - stats.TotalBoxes
 	if newBoxes != 0 {
 		err := s.dao.AddBoxesByUserID(stake.UserID, newBoxes)
@@ -89,9 +96,19 @@ func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake, user *models.User)
 	}
 
 	stake.BoxesGiven = uint64(newBoxes)
-	stake, err = s.dao.SaveDelegationTx(stake)
+	stake, err = s.dao.SaveDelegationTxAndCreateReward(stake)
 	if err != nil {
 		return nil, fmt.Errorf("dao.SaveDelegationTx: %s", err.Error())
+	}
+
+	return stake, nil
+}
+
+func (s *ServiceFacade) SaveFailedDelegationTx(stake *models.Stake) (*models.Stake, error) {
+	stake.Status = false
+	stake, err := s.dao.SaveFailedDelegationTx(stake)
+	if err != nil {
+		return nil, fmt.Errorf("dao.SaveFailedDelegationTx: %s", err.Error())
 	}
 
 	return stake, nil
@@ -110,6 +127,15 @@ func (s *ServiceFacade) GetDelegationByTxHash(stake *models.Stake) (*models.Stak
 	}
 
 	return nil, nil
+}
+
+func (s *ServiceFacade) GetFailedDelegations(pagination filters.Pagination) ([]models.FailedStakeShow, uint64, error) {
+	delegations, length, err := s.dao.GetFailedDelegations(pagination)
+	if err != nil {
+		return nil, length, fmt.Errorf("dao.GetFailedDelegations: %s", err.Error())
+	}
+
+	return delegations, length, nil
 }
 
 func (s *ServiceFacade) GetInvitedUsersStakes(user *models.User, pagination filters.Pagination) ([]models.StakeShow, uint64, error) {
