@@ -1,10 +1,15 @@
 package services
 
 import (
+	"fmt"
 	"new-refferal/models"
 )
 
 func (s *ServiceFacade) FetchAuth(authD *models.AccessDetails) (string, error) {
+	if authD == nil {
+		return "", fmt.Errorf("empty token details")
+	}
+
 	walletAddr, ok, err := s.dao.GetAuthToken(authD.AccessUuid)
 	if err != nil || !ok {
 		return "", err

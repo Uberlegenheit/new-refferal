@@ -156,9 +156,9 @@ func (db *Postgres) GetUsersInvitationsStats(pagination filters.Pagination) ([]m
 	return stats, length, nil
 }
 
-func (db *Postgres) CreateAndUpdateRewardsState(pool *models.RewardsPool, user *models.User, amount float64) error {
+func (db *Postgres) CreateAndUpdateRewardsState(pool *models.RewardPool, user *models.User, amount float64) error {
 	err := db.db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(&models.RewardsPool{}).
+		if err := tx.Model(&models.RewardPool{}).
 			Table(models.RewardsPoolTable).
 			Where("id = ?", pool.ID).
 			Updates(map[string]interface{}{

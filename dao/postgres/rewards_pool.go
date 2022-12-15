@@ -7,8 +7,8 @@ import (
 	"new-refferal/models"
 )
 
-func (db *Postgres) GetRewardsPool() (*models.RewardsPool, error) {
-	pool := new(models.RewardsPool)
+func (db *Postgres) GetRewardsPool() (*models.RewardPool, error) {
+	pool := new(models.RewardPool)
 	err := db.db.Table(models.RewardsPoolTable).
 		Last(pool).
 		Order("id desc").Error
@@ -22,9 +22,9 @@ func (db *Postgres) GetRewardsPool() (*models.RewardsPool, error) {
 	return pool, nil
 }
 
-func (db *Postgres) UpdateRewardsPool(pool *models.RewardsPool) error {
+func (db *Postgres) UpdateRewardsPool(pool *models.RewardPool) error {
 	result := db.db.Table(models.RewardsPoolTable).
-		Model(&models.RewardsPool{}).
+		Model(&models.RewardPool{}).
 		Where("id = ?", pool.ID).
 		Updates(map[string]interface{}{
 			"available": pool.Available,
@@ -37,9 +37,9 @@ func (db *Postgres) UpdateRewardsPool(pool *models.RewardsPool) error {
 	return nil
 }
 
-func (db *Postgres) SetDailyPoolLimit(pool *models.RewardsPool) error {
+func (db *Postgres) SetDailyPoolLimit(pool *models.RewardPool) error {
 	result := db.db.Table(models.RewardsPoolTable).
-		Model(&models.RewardsPool{}).
+		Model(&models.RewardPool{}).
 		Where("id = ?", pool.ID).
 		Updates(map[string]interface{}{
 			"daily_limit": pool.DailyLimit,

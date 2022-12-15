@@ -57,11 +57,11 @@ type (
 		GetFriendsStakeStats(req filters.PeriodInfoRequest, pagination filters.Pagination) ([]models.FriendStakeStats, uint64, error)
 		GetUsersInvitationsStats(pagination filters.Pagination) ([]models.InvitationsStats, uint64, error)
 
-		GetRewardsPool() (*models.RewardsPool, error)
-		UpdateRewardsPool(pool *models.RewardsPool) error
-		SetDailyPoolLimit(pool *models.RewardsPool) error
+		GetRewardsPool() (*models.RewardPool, error)
+		UpdateRewardsPool(pool *models.RewardPool) error
+		SetDailyPoolLimit(pool *models.RewardPool) error
 
-		CreateAndUpdateRewardsState(pool *models.RewardsPool, user *models.User, amount float64) error
+		CreateAndUpdateRewardsState(pool *models.RewardPool, user *models.User, amount float64) error
 	}
 
 	Cache interface {
