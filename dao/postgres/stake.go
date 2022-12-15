@@ -37,7 +37,7 @@ func (db *Postgres) SaveDelegationTxAndCreateReward(stake *models.Stake) (*model
 		if reward == nil {
 			if err := tx.Create(&models.Reward{
 				UserID:  stake.UserID,
-				Status:  "claim your reward via wallet",
+				Status:  "get reward in wallet",
 				TypeID:  1,
 				Amount:  0,
 				Hash:    "",
@@ -221,7 +221,7 @@ func (db *Postgres) SaveTXAndUpdateReward(info *models.StakeAndBoxStat, stake, r
 			Where("user_id = ? and type_id = 1", info.UserID).
 			Updates(&models.Reward{
 				UserID:  info.UserID,
-				Status:  "claim your reward via wallet",
+				Status:  "get reward in wallet",
 				TypeID:  1,
 				Amount:  reward,
 				Hash:    "updated rewards",
