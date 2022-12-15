@@ -24,7 +24,7 @@ const (
 )
 
 func (s *ServiceFacade) InitCron(cron *gron.Cron) {
-	dur := time.Second * 20 //time.Hour * 6
+	dur := time.Hour * 6
 	log.Infof("Scheduled delegations parse every %s", dur)
 	cron.AddFunc(gron.Every(dur), func() {
 		err := s.parseDelegations()
@@ -111,35 +111,6 @@ func (s *ServiceFacade) parseDelegations() error {
 		if err != nil {
 			return fmt.Errorf("dao.SaveTXAndUpdateReward: %s", err.Error())
 		}
-
-		//if info.TotalStake != stakeF {
-		//	err := s.dao.SetUserDelegationsFalse(users[i].ID)
-		//	if err != nil {
-		//		return fmt.Errorf("dao.SetUserDelegationsFalse: %s", err.Error())
-		//	}
-		//	_, err = s.dao.SaveDelegationTx(&models.Stake{
-		//		UserID:  users[i].ID,
-		//		Amount:  stakeF,
-		//		Status:  true,
-		//		Hash:    "updated delegation balance",
-		//		Created: time.Now(),
-		//	})
-		//	if err != nil {
-		//		return fmt.Errorf("dao.SaveDelegationTx: %s", err.Error())
-		//	}
-		//}
-		//
-		//err = s.dao.UpdateReward(&models.Reward{
-		//	UserID:  users[i].ID,
-		//	Status:  "updated",
-		//	TypeID:  1,
-		//	Amount:  rewardF,
-		//	Hash:    "updated rewards",
-		//	Created: time.Now(),
-		//})
-		//if err != nil {
-		//	return fmt.Errorf("dao.UpdateReward: %s", err.Error())
-		//}
 	}
 
 	return nil

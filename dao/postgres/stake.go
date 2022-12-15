@@ -119,7 +119,7 @@ func (db *Postgres) GetInvitedUsersStakes(id uint64, pagination filters.Paginati
 	limit := pagination.Limit
 	if offset > length {
 		return nil, length, nil
-	} else if limit > length {
+	} else if limit > length || offset+limit > length {
 		stakes = stakes[offset:length]
 	} else {
 		stakes = stakes[offset : offset+limit]
@@ -186,7 +186,7 @@ func (db *Postgres) GetFailedDelegations(pagination filters.Pagination) ([]model
 	limit := pagination.Limit
 	if offset > length {
 		return nil, length, nil
-	} else if limit > length {
+	} else if limit > length || offset+limit > length {
 		stakes = stakes[offset:length]
 	} else {
 		stakes = stakes[offset : offset+limit]

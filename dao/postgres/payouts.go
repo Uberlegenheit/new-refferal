@@ -66,7 +66,7 @@ func (db *Postgres) GetPayouts(pagination filters.Pagination) ([]models.PayoutSh
 	limit := pagination.Limit
 	if offset > length {
 		return nil, length, nil
-	} else if limit > length {
+	} else if limit > length || offset+limit > length {
 		payouts = payouts[offset:length]
 	} else {
 		payouts = payouts[offset : offset+limit]
