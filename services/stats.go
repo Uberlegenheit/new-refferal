@@ -5,6 +5,8 @@ import (
 	"math"
 	"new-refferal/filters"
 	"new-refferal/models"
+	"os"
+	"strconv"
 )
 
 func (s *ServiceFacade) GetTotalRewardStats() (*models.TotalReward, error) {
@@ -22,7 +24,12 @@ func (s *ServiceFacade) GetMyStakeSum(id uint64) (*models.StakeAndProgress, erro
 		return nil, fmt.Errorf("dao.GetMyStakeSum: %s", err.Error())
 	}
 
-	toNewBox := stake.TotalStake / StakeToBox
+	stb := os.Getenv("STAKE_TO_BOX")
+	stakeToBox, err := strconv.ParseFloat(stb, 64)
+	if err != nil {
+		return nil, fmt.Errorf("ParseFloat: %s", err.Error())
+	}
+	toNewBox := stake.TotalStake / stakeToBox
 	prcToOne := toNewBox - float64(int(toNewBox))
 	stake.Progress = math.Floor(prcToOne*100000.0) / 100000.0
 

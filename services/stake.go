@@ -15,8 +15,6 @@ import (
 	"time"
 )
 
-const StakeToBox = 0.001
-
 func roundFloat(val float64, precision uint) float64 {
 	ratio := math.Pow(10, float64(precision))
 	return math.Round(val*ratio) / ratio
@@ -85,8 +83,13 @@ func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake, user *models.User)
 		return nil, fmt.Errorf("dao.GetStakeAndBoxUserStatByID: %s", err.Error())
 	}
 
-	boxesOnSum := int64(roundFloat((stats.TotalStake)/StakeToBox, 5))
-	boxesAvailable := int64(roundFloat((stats.TotalStake+stake.Amount)/StakeToBox, 5))
+	stb := os.Getenv("STAKE_TO_BOX")
+	stakeToBox, err := strconv.ParseFloat(stb, 64)
+	if err != nil {
+		return nil, fmt.Errorf("ParseFloat: %s", err.Error())
+	}
+	boxesOnSum := int64(roundFloat((stats.TotalStake)/stakeToBox, 5))
+	boxesAvailable := int64(roundFloat((stats.TotalStake+stake.Amount)/stakeToBox, 5))
 	newBoxes := boxesAvailable - boxesOnSum
 	if newBoxes > 0 {
 		err := s.dao.AddBoxesByUserID(stake.UserID, newBoxes)
