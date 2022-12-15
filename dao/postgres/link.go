@@ -33,3 +33,16 @@ func (db *Postgres) GetLinkByUserID(id uint64) (*models.Link, error) {
 
 	return link, nil
 }
+
+func (db *Postgres) GetLinkByCode(code string) (*models.Link, error) {
+	link := new(models.Link)
+	result := db.db.First(link, "code = ?", code)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+
+	return link, nil
+}

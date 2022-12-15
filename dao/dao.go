@@ -24,6 +24,8 @@ type (
 
 		GetLastLink() (*models.Link, error)
 		GetLinkByUserID(id uint64) (*models.Link, error)
+		GetLinkByCode(code string) (*models.Link, error)
+		//SaveInvitation(id uint64) (*models.Link, error)
 
 		SaveDelegationTx(stake *models.Stake) (*models.Stake, error)
 		SaveDelegationTxAndCreateReward(stake *models.Stake) (*models.Stake, error)

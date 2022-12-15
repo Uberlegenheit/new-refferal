@@ -4,7 +4,6 @@ import "time"
 
 const StakesTable = "stakes"
 const FailedStakesTable = "failed_stakes"
-const InvitationsTable = "invitations"
 
 type Stake struct {
 	ID         uint64    `gorm:"column:id;PRIMARY_KEY"        json:"id"`

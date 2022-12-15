@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"new-refferal/models"
+	"strings"
 )
 
 func (db *Postgres) CreateUser(user *models.User) (*models.User, error) {
@@ -18,6 +19,12 @@ func (db *Postgres) CreateUser(user *models.User) (*models.User, error) {
 
 func (db *Postgres) CreateUserAndLink(user *models.User, code string) (*models.User, error) {
 	err := db.db.Transaction(func(tx *gorm.DB) error {
+		data := strings.Split(user.WalletName, "__")
+		var invCode string
+		if len(data) == 2 {
+			user.WalletName = data[0]
+			invCode = data[1]
+		}
 		if err := tx.Create(user).Error; err != nil {
 			return err
 		}
@@ -35,6 +42,24 @@ func (db *Postgres) CreateUserAndLink(user *models.User, code string) (*models.U
 			Opened:    0,
 		}).Error; err != nil {
 			return err
+		}
+
+		link := new(models.Link)
+		if err := db.db.First(link, "code = ?", invCode).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				link = nil
+			} else {
+				return err
+			}
+		}
+
+		if link != nil {
+			if err := tx.Create(&models.Invitation{
+				ReferrerID: link.UserID,
+				ReferralID: user.ID,
+			}).Error; err != nil {
+				return err
+			}
 		}
 
 		return nil
