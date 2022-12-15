@@ -18,7 +18,6 @@ func (api *API) Delegate(c *gin.Context) {
 		return
 	}
 	user := val.(models.User)
-	//user := models.User{ID: 1}
 
 	var stake models.Stake
 	if err := c.ShouldBindJSON(&stake); err != nil {

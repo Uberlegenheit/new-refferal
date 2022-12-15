@@ -85,14 +85,9 @@ func (s *ServiceFacade) SaveDelegationTx(stake *models.Stake, user *models.User)
 		return nil, fmt.Errorf("dao.GetStakeAndBoxUserStatByID: %s", err.Error())
 	}
 
-	//a := stats.TotalStake + stake.Amount
-	//b := a / StakeToBox
-	//fmt.Println(b)
 	boxesAvailable := int64(roundFloat((stats.TotalStake+stake.Amount)/StakeToBox, 5))
-
-	//boxesAvailable := int64(roundFloat(stake.Amount/StakeToBox, 5))
 	newBoxes := boxesAvailable - stats.TotalBoxes
-	if newBoxes != 0 {
+	if newBoxes > 0 {
 		err := s.dao.AddBoxesByUserID(stake.UserID, newBoxes)
 		if err != nil {
 			return nil, fmt.Errorf("dao.AddBoxesByUserID: %s", err.Error())

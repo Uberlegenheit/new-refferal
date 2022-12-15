@@ -3,6 +3,7 @@ package models
 import "time"
 
 const RewardsTable = "rewards"
+const RewardsHistoryTable = "rewards_history"
 const CreatedRewardStatus = "created"
 const SentRewardStatus = "sent"
 const APYRewardType = 1
@@ -15,6 +16,14 @@ type Reward struct {
 	TypeID  uint64    `gorm:"column:type_id"               json:"type_id"`
 	Amount  float64   `gorm:"column:amount"                json:"amount"`
 	Hash    string    `gorm:"column:tx_hash;default:"      json:"hash"`
+	Created time.Time `gorm:"column:created;default:now()" json:"created"`
+}
+
+type RewardHistory struct {
+	ID      uint64    `gorm:"column:id;PRIMARY_KEY"        json:"id"`
+	UserID  uint64    `gorm:"column:user_id"               json:"user_id"`
+	Stake   float64   `gorm:"column:stake"                 json:"stake"`
+	Reward  float64   `gorm:"column:reward"                json:"reward"`
 	Created time.Time `gorm:"column:created;default:now()" json:"created"`
 }
 

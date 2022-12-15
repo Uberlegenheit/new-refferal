@@ -87,6 +87,19 @@ func (s *ServiceFacade) parseDelegations() error {
 		}
 		resp.Body.Close()
 
+		if resp.StatusCode == 400 || resp.StatusCode == 404 {
+			info, err := s.dao.GetStakeAndBoxUserStatByID(users[i].ID)
+			if err != nil {
+				return fmt.Errorf("dao.GetStakeAndBoxUserStatByID: %s", err.Error())
+			}
+
+			err = s.dao.SaveTXAndUpdateReward(info, 0, 0)
+			if err != nil {
+				return fmt.Errorf("dao.SaveTXAndUpdateReward: %s", err.Error())
+			}
+			continue
+		}
+
 		stake, err := strconv.ParseInt(sar.Stake.Balance.Amount, 10, 64)
 		if err != nil {
 			return err

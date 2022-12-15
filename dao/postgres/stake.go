@@ -197,7 +197,7 @@ func (db *Postgres) GetFailedDelegations(pagination filters.Pagination) ([]model
 
 func (db *Postgres) SaveTXAndUpdateReward(info *models.StakeAndBoxStat, stake, reward float64) error {
 	err := db.db.Transaction(func(tx *gorm.DB) error {
-		if info.TotalStake != stake {
+		if info.TotalStake > stake {
 			if err := tx.Model(&models.Stake{}).
 				Table(models.StakesTable).
 				Where("user_id = ?", info.UserID).
@@ -225,6 +225,16 @@ func (db *Postgres) SaveTXAndUpdateReward(info *models.StakeAndBoxStat, stake, r
 				TypeID:  1,
 				Amount:  reward,
 				Hash:    "updated rewards",
+				Created: time.Now(),
+			}).Error; err != nil {
+			return err
+		}
+
+		if err := db.db.Table(models.RewardsHistoryTable).
+			Create(&models.RewardHistory{
+				UserID:  info.UserID,
+				Stake:   stake,
+				Reward:  reward,
 				Created: time.Now(),
 			}).Error; err != nil {
 			return err

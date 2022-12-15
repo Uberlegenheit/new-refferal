@@ -169,8 +169,6 @@ func (api *API) initialize() {
 	api.router.POST("/refresh", api.Refresh)
 	api.router.GET("/all_rewards", api.GetAllRewards)
 
-	//api.router.POST("/delegate", api.Delegate)
-
 	authGroup := api.router.Group("/auth")
 	authGroup.Use(api.AuthMiddleware())
 	{
